@@ -18,6 +18,7 @@ select,input{width:100%;padding:11px;border:1px solid #ddd;border-radius:11px;ba
 <header>
 <h1>Card Collector</h1><div class="sub">プロファイルを追加してカードを集めよう</div>
 <div class="top"><button id="profilesBtn">📚 プロファイル</button><button class="light" id="importBtn">＋ インポート</button></div>
+<div class="top"><button id="collectionBtn">🖼️ コレクション画像を作る</button></div>
 <select id="profileSelect" style="margin-top:9px"></select>
 <div class="stats"><span id="count">0 / 0</span><span id="pct">0%</span></div><div class="progress"><i id="bar"></i></div>
 <div class="controls"><input id="q" placeholder="カード番号・レアリティ・名前"><select id="status"><option value="">すべて</option><option value="no">未所持</option><option value="yes">所持</option><option value="want">欲しい</option></select><select id="rarity"><option value="">全レアリティ</option></select></div>
@@ -39,6 +40,14 @@ select,input{width:100%;padding:11px;border:1px solid #ddd;border-radius:11px;ba
 <button style="width:100%;margin-top:8px" class="light" id="flip">裏面を見る</button>
 </div></div>
 
+
+<div class="modal hidden" id="collectionModal"><div class="panel">
+<button class="close" id="collectionClose">×</button><h2>コレクション画像</h2>
+<div class="small" id="collectionInfo" style="margin-bottom:10px"></div>
+<canvas id="collectionCanvas" style="width:100%;border-radius:10px;background:#fff"></canvas>
+<button style="width:100%;margin-top:10px" id="saveCollection">画像を保存</button>
+<button style="width:100%;margin-top:8px" class="light" id="rebuildCollection">作り直す</button>
+</div></div>
 <script>
 const KEY="cardcollector-profiles-v1";
 let profiles=JSON.parse(localStorage.getItem(KEY)||"[]"),activeId=localStorage.getItem("cardcollector-active")||"",cur=null,back=false;
@@ -69,7 +78,46 @@ function render(){
 }
 function openCard(id){let p=active();cur=p.cards.find(c=>c.id===id);back=false;$("modal").classList.remove("hidden");updateModal()}
 function updateModal(){let o=getSet("owned",active().id),w=getSet("wanted",active().id);$("big").src=back?(cur.backImage||cur.image):cur.image;$("title").textContent=cur.number+(cur.name?"　"+cur.name:"");$("info").textContent=active().name+"　"+cur.rarity;$("owned").textContent=o.has(cur.id)?"✓ 所持":"☐ 未所持";$("wanted").textContent=w.has(cur.id)?"★ 欲しい":"☆ 欲しい";$("flip").textContent=back?"表面を見る":"裏面を見る"}
-$("importBtn").onclick=()=>$("file").click();$("sheetImport").onclick=()=>$("file").click();$("file").onchange=e=>{if(e.target.files[0])importFile(e.target.files[0]);e.target.value=""};
+
+async function makeCollectionImage(){
+ let p=active(); if(!p){alert("先にプロファイルを追加してください。");return}
+ let o=getSet("owned",p.id); let cards=p.cards.filter(c=>o.has(c.id));
+ if(!cards.length){alert("所持カードにチェックが付いていません。");return}
+ const canvas=$("collectionCanvas"), ctx=canvas.getContext("2d");
+ const cols=4, cardW=220, gap=16, pad=28, titleH=86, metaH=30;
+ const rows=Math.ceil(cards.length/cols), cardH=Math.round(cardW/0.7), width=pad*2+cols*cardW+(cols-1)*gap, height=pad*2+titleH+rows*(cardH+metaH)+(rows-1)*gap;
+ canvas.width=width*2; canvas.height=height*2; ctx.scale(2,2);
+ ctx.fillStyle="#f7f5f8";ctx.fillRect(0,0,width,height);
+ ctx.fillStyle="#252329";ctx.font="bold 25px -apple-system,BlinkMacSystemFont,'Noto Sans JP',sans-serif";ctx.fillText(p.name,pad,pad+30);
+ ctx.font="bold 15px -apple-system,BlinkMacSystemFont,'Noto Sans JP',sans-serif";ctx.fillStyle="#666";ctx.fillText(`コレクション ${cards.length} / ${p.cards.length}`,pad,pad+56);
+ for(let i=0;i<cards.length;i++){
+   const c=cards[i], col=i%cols,row=Math.floor(i/cols),x=pad+col*(cardW+gap),y=pad+titleH+row*(cardH+metaH+gap);
+   ctx.fillStyle="#fff";ctx.fillRect(x,y,cardW,cardH);
+   try{
+     const img=await loadImage(c.image);
+     const ratio=Math.max(cardW/img.naturalWidth,cardH/img.naturalHeight);
+     const sw=img.naturalWidth*ratio, sh=img.naturalHeight*ratio;
+     ctx.drawImage(img,x+(cardW-sw)/2,y+(cardH-sh)/2,sw,sh);
+   }catch(e){
+     ctx.fillStyle="#eee";ctx.fillRect(x,y,cardW,cardH);ctx.fillStyle="#777";ctx.font="14px sans-serif";ctx.textAlign="center";ctx.fillText("画像を読み込めません",x+cardW/2,y+cardH/2);ctx.textAlign="left";
+   }
+   ctx.fillStyle="#252329";ctx.font="bold 13px sans-serif";ctx.fillText(c.number||"",x,y+cardH+20);
+   if(c.rarity){ctx.fillStyle="#777";ctx.font="12px sans-serif";ctx.textAlign="right";ctx.fillText(c.rarity,x+cardW,y+cardH+20);ctx.textAlign="left"}
+ }
+ $("collectionInfo").textContent=`${cards.length}枚の所持カードを一覧にしました。`;
+ $("collectionModal").classList.remove("hidden");
+}
+function loadImage(src){return new Promise((resolve,reject)=>{const img=new Image();img.crossOrigin="anonymous";img.onload=()=>resolve(img);img.onerror=reject;img.src=src})}
+async function saveCollectionImage(){
+ const canvas=$("collectionCanvas");
+ try{
+   const blob=await new Promise((res,rej)=>canvas.toBlob(b=>b?res(b):rej(),"image/png"));
+   const file=new File([blob],"aikatsu-collection.png",{type:"image/png"});
+   if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){await navigator.share({files:[file],title:"アイカツ！コレクション"});return}
+   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="aikatsu-collection.png";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+ }catch(e){alert("画像を保存できませんでした。カード画像の読み込みを許可している環境でお試しください。")}
+}
+$("importBtn").onclick=()=>$("file").click();$("collectionBtn").onclick=makeCollectionImage;$("collectionClose").onclick=()=>$("collectionModal").classList.add("hidden");$("rebuildCollection").onclick=makeCollectionImage;$("saveCollection").onclick=saveCollectionImage;$("sheetImport").onclick=()=>$("file").click();$("file").onchange=e=>{if(e.target.files[0])importFile(e.target.files[0]);e.target.value=""};
 $("profilesBtn").onclick=()=>{$("profilesSheet").classList.remove("hidden");renderProfiles()};$("profilesClose").onclick=()=>$("profilesSheet").classList.add("hidden");
 $("profileSelect").onchange=e=>selectP(e.target.value);$("modalClose").onclick=()=>$("modal").classList.add("hidden");$("flip").onclick=()=>{back=!back;updateModal()};
 $("owned").onclick=()=>{let s=getSet("owned",active().id);s.has(cur.id)?s.delete(cur.id):s.add(cur.id);putSet("owned",active().id,s);render();updateModal()};

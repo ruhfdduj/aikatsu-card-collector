@@ -6,7 +6,7 @@
 <title>Card Collector</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f7f5f8;color:#252329;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif}
-header{background:#fff;padding:0;box-shadow:0 2px 12px #0001}.fixedbar{position:sticky;top:0;z-index:5;background:#fff;padding:12px 14px 10px;box-shadow:0 2px 12px #0001}.tools{padding:0 14px 12px;background:#fff}.tools .top{margin-top:0;padding-top:10px}.tools .collectionBtn{margin-top:9px}.controls{margin-top:9px}.fixedbar .stats{margin:9px 0 7px}
+header{background:#fff;padding:0;box-shadow:0 2px 12px #0001}.fixedbar{background:#fff;padding:12px 14px 10px}.tools{padding:0 14px 12px;background:#fff}.tools .top{margin-top:0;padding-top:10px}.tools .collectionBtn{margin-top:9px}.controls{margin-top:9px}.fixedbar .stats{margin:9px 0 7px}
 h1{font-size:20px;margin:0 0 3px}.sub{font-size:12px;color:#777}.top{display:flex;gap:7px;margin-top:10px}.top button{flex:1}
 button{font:inherit;border:0;border-radius:11px;padding:11px;background:#222;color:#fff;font-weight:700}.light{background:#eee;color:#222}
 select,input{width:100%;padding:11px;border:1px solid #ddd;border-radius:11px;background:#fff;font-size:16px}
@@ -23,7 +23,7 @@ select,input{width:100%;padding:11px;border:1px solid #ddd;border-radius:11px;ba
 <div class="tools">
 <div class="top"><button id="profilesBtn">📚 プロファイル</button><button class="light" id="importBtn">＋ インポート</button></div>
 <div class="controls"><select id="status"><option value="">すべて</option><option value="no">未所持</option><option value="yes">所持</option><option value="want">欲しい</option></select><select id="rarity"><option value="">全レアリティ</option></select></div>
-<button id="collectionBtn" class="collectionBtn" style="width:100%">🖼️ コレクション画像を作る</button>
+<div class="top"><button id="collectionBtn" class="collectionBtn">🖼️ コレクション画像を作る</button><button class="light" id="exportBtn">💾 JSONを書き出す</button></div>
 </div>
 </header>
 <main class="grid" id="grid"></main>
@@ -59,6 +59,16 @@ function active(){return profiles.find(p=>p.id===activeId)||profiles[0]}
 function stateKey(kind,id){return "cc-"+kind+"-"+id}
 function getSet(kind,id){return new Set(JSON.parse(localStorage.getItem(stateKey(kind,id))||"[]"))}
 function putSet(kind,id,s){localStorage.setItem(stateKey(kind,id),JSON.stringify([...s]))}
+function exportProfile(){
+ let p=active();
+ if(!p){alert("プロファイルがありません。");return}
+ const o=getSet("owned",p.id),w=getSet("wanted",p.id);
+ const out={profileVersion:p.profileVersion||1,id:p.id,name:p.name,cards:p.cards.map(c=>({...c,owned:o.has(c.id),wanted:w.has(c.id)}))};
+ const blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json;charset=utf-8"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download=(p.id||"card-profile")+"-collection.json";document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
 function renderProfiles(){
  let p=profiles;$("profileSelect").innerHTML=p.length?p.map(x=>`<option value="${x.id}" ${x.id===activeId?"selected":""}>${esc(x.name)}</option>`).join(""):'<option>プロファイルをインポートしてください</option>';
  $("profileList").innerHTML=p.length?p.map(x=>`<div class="profileRow"><div class="name">${esc(x.name)}<div class="small">${x.cards.length}枚</div></div><button class="light" onclick="selectP('${x.id}')">開く</button><button style="background:#b22" onclick="removeP('${x.id}')">削除</button></div>`).join(""):'<div class="msg">まだプロファイルがありません</div>';
@@ -67,10 +77,15 @@ function selectP(id){activeId=id;localStorage.setItem("cardcollector-active",id)
 function removeP(id){if(!confirm("このプロファイルを削除しますか？\n所持情報もこの端末から削除されます。"))return;profiles=profiles.filter(p=>p.id!==id);localStorage.removeItem(stateKey("owned",id));localStorage.removeItem(stateKey("wanted",id));activeId=profiles[0]?.id||"";save();localStorage.setItem("cardcollector-active",activeId);renderProfiles();render()}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 async function importFile(file){
- try{let p=JSON.parse(await file.text());if(!p||!p.name||!Array.isArray(p.cards))throw Error("形式が違います");p.id=p.id||("profile-"+Date.now());if(profiles.some(x=>x.id===p.id))p.id=p.id+"-"+Date.now();p.cards=p.cards.map((c,i)=>({...c,id:c.id||c.number||String(i),rarity:c.rarity||"",image:c.image||""}));profiles.push(p);activeId=p.id;save();localStorage.setItem("cardcollector-active",activeId);renderProfiles();render();alert("「"+p.name+"」を追加しました！")}catch(e){alert("プロファイルを読み込めませんでした。JSON形式を確認してください。")}
+ try{let p=JSON.parse(await file.text());if(!p||!p.name||!Array.isArray(p.cards))throw Error("形式が違います");p.id=p.id||("profile-"+Date.now());if(profiles.some(x=>x.id===p.id))p.id=p.id+"-"+Date.now();p.cards=p.cards.map((c,i)=>({...c,id:c.id||c.number||String(i),rarity:c.rarity||"",image:c.image||""}));
+ profiles.push(p);activeId=p.id;
+ const owned=new Set(p.cards.filter(c=>c.owned===true).map(c=>c.id));
+ const wanted=new Set(p.cards.filter(c=>c.wanted===true).map(c=>c.id));
+ if(owned.size)putSet("owned",p.id,owned); else localStorage.removeItem(stateKey("owned",p.id));
+ if(wanted.size)putSet("wanted",p.id,wanted); else localStorage.removeItem(stateKey("wanted",p.id));save();localStorage.setItem("cardcollector-active",activeId);renderProfiles();render();alert("「"+p.name+"」を追加しました！")}catch(e){alert("プロファイルを読み込めませんでした。JSON形式を確認してください。")}
 }
 function render(){
- let p=active();if(!p){$("grid").innerHTML='<div class="msg" style="grid-column:1/-1">まず「＋ インポート」からプロファイルを追加してください。</div>';$("count").textContent="0 / 0";$("pct").textContent="0%";$("bar").style.width="0";return}
+ let p=active();if(!p){$("grid").innerHTML='<div class="msg" style="grid-column:1/-1">まず「＋ インポート」からプロファイルを追加してください。</div>';$("count").textContent="0 / 0";$("pct").textContent="0%";return}
  let o=getSet("owned",p.id),w=getSet("wanted",p.id),q=$("q").value.toLowerCase(),st=$("status").value,r=$("rarity").value;
  let rar=[...new Set(p.cards.map(c=>c.rarity).filter(Boolean))];$("rarity").innerHTML='<option value="">全レアリティ</option>'+rar.map(x=>`<option>${esc(x)}</option>`).join("");$("rarity").value=r;
  let list=p.cards.filter(c=>(!q||[c.number,c.name,c.rarity].join(" ").toLowerCase().includes(q))&&(!r||c.rarity===r)&&(!st||(st==="yes"&&o.has(c.id))||(st==="no"&&!o.has(c.id))||(st==="want"&&w.has(c.id))));
@@ -82,7 +97,7 @@ function render(){
    const want=e.querySelector(".want");
    want.onclick=(ev)=>{ev.stopPropagation();const s=getSet("wanted",active().id);s.has(e.dataset.id)?s.delete(e.dataset.id):s.add(e.dataset.id);putSet("wanted",active().id,s);render()};
  });
- let pct=p.cards.length?Math.round(o.size/p.cards.length*100):0;$("count").textContent=`${o.size} / ${p.cards.length}`;$("pct").textContent=pct+"%";$("bar").style.width=pct+"%";
+ let pct=p.cards.length?Math.round(o.size/p.cards.length*100):0;$("count").textContent=`${o.size} / ${p.cards.length}`;$("pct").textContent=pct+"%";
 }
 function openCard(id){let p=active();cur=p.cards.find(c=>c.id===id);$("modal").classList.remove("hidden");updateModal()}
 function updateModal(){let o=getSet("owned",active().id),w=getSet("wanted",active().id);$("big").src=cur.image;$("title").textContent=cur.number+(cur.name?"　"+cur.name:"");$("info").textContent=active().name+"　"+cur.rarity;$("owned").textContent=o.has(cur.id)?"✓ 所持":"☐ 未所持";$("wanted").textContent=w.has(cur.id)?"★ 欲しい":"☆ 欲しい"}
@@ -98,7 +113,15 @@ async function makeCollectionImage(mode=collectionMode){
  const cols=3,cellW=360,imgW=320,imgH=440,labelH=62,pad=30,titleH=110,rows=Math.ceil(cards.length/cols),canvas=$("collectionCanvas");
  canvas.width=cols*cellW+pad*2;canvas.height=titleH+rows*(imgH+labelH)+pad;const ctx=canvas.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);
  ctx.fillStyle="#222";ctx.font="bold 34px -apple-system,BlinkMacSystemFont,sans-serif";ctx.fillText(p.name,pad,52);ctx.font="22px -apple-system,BlinkMacSystemFont,sans-serif";ctx.fillText(`${mode==="owned"?"所持":mode==="wanted"?"欲しい":"未所持"} ${cards.length}枚`,pad,86);
- for(let i=0;i<cards.length;i++){const c=cards[i],x=pad+(i%cols)*cellW+20,y=titleH+Math.floor(i/cols)*(imgH+labelH)+10;try{const img=new Image();img.crossOrigin="anonymous";img.src=proxyImageUrl(c.image);await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;setTimeout(()=>rej(new Error("timeout")),10000)});const ratio=Math.min(imgW/img.naturalWidth,imgH/img.naturalHeight),w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;ctx.drawImage(img,x+(imgW-w)/2,y+(imgH-h)/2,w,h)}catch(e){ctx.fillStyle="#eee";ctx.fillRect(x,y,imgW,imgH);ctx.fillStyle="#777";ctx.font="20px sans-serif";ctx.fillText("画像を取得できません",x+35,y+220)}ctx.fillStyle="#222";ctx.font="bold 22px sans-serif";ctx.fillText(c.number||"",x,y+imgH+28);ctx.font="20px sans-serif";ctx.fillText(c.rarity||"",x+150,y+imgH+28);if(c.name){ctx.font="18px sans-serif";ctx.fillText(String(c.name).slice(0,18),x,y+imgH+52)}}
+ const loaded=await Promise.all(cards.map(async c=>{
+   try{const img=new Image();img.crossOrigin="anonymous";img.src=proxyImageUrl(c.image);await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;setTimeout(()=>rej(new Error("timeout")),10000)});return {c,img}}
+   catch(e){return {c,img:null}}
+ }));
+ for(let i=0;i<loaded.length;i++){const {c,img}=loaded[i],x=pad+(i%cols)*cellW+20,y=titleH+Math.floor(i/cols)*(imgH+labelH)+10;
+   if(img){const ratio=Math.min(imgW/img.naturalWidth,imgH/img.naturalHeight),w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;ctx.drawImage(img,x+(imgW-w)/2,y+(imgH-h)/2,w,h)}
+   else{ctx.fillStyle="#eee";ctx.fillRect(x,y,imgW,imgH);ctx.fillStyle="#777";ctx.font="20px sans-serif";ctx.fillText("画像を取得できません",x+35,y+220)}
+   ctx.fillStyle="#222";ctx.font="bold 22px sans-serif";ctx.fillText(c.number||"",x,y+imgH+28);ctx.font="20px sans-serif";ctx.fillText(c.rarity||"",x+150,y+imgH+28);if(c.name){ctx.font="18px sans-serif";ctx.fillText(String(c.name).slice(0,18),x,y+imgH+52)}
+ }
  $("collectionInfo").textContent=`${cards.length}枚の${mode==="owned"?"所持":mode==="wanted"?"欲しい":"未所持"}カードをまとめました。`;
 }
 function saveCollectionImage(){
@@ -107,7 +130,7 @@ function saveCollectionImage(){
  catch(e){alert("画像を保存できませんでした。カード画像のサイト側の制限により、保存できない場合があります。")}
 }
 document.querySelectorAll(".collectionMode").forEach(b=>b.onclick=()=>makeCollectionImage(b.dataset.mode));
-$("collectionBtn").onclick=()=>makeCollectionImage(collectionMode);$("collectionSave").onclick=saveCollectionImage;$("collectionClose").onclick=()=>$("collectionModal").classList.add("hidden");$("importBtn").onclick=()=>$("file").click();$("sheetImport").onclick=()=>$("file").click();$("file").onchange=e=>{if(e.target.files[0])importFile(e.target.files[0]);e.target.value=""};
+$("collectionBtn").onclick=()=>makeCollectionImage(collectionMode);$("exportBtn").onclick=exportProfile;$("collectionSave").onclick=saveCollectionImage;$("collectionClose").onclick=()=>$("collectionModal").classList.add("hidden");$("importBtn").onclick=()=>$("file").click();$("sheetImport").onclick=()=>$("file").click();$("file").onchange=e=>{if(e.target.files[0])importFile(e.target.files[0]);e.target.value=""};
 $("profilesBtn").onclick=()=>{$("profilesSheet").classList.remove("hidden");renderProfiles()};$("profilesClose").onclick=()=>$("profilesSheet").classList.add("hidden");
 $("profileSelect").onchange=e=>selectP(e.target.value);$("modalClose").onclick=()=>$("modal").classList.add("hidden");
 $("owned").onclick=()=>{let s=getSet("owned",active().id);s.has(cur.id)?s.delete(cur.id):s.add(cur.id);putSet("owned",active().id,s);render();updateModal()};

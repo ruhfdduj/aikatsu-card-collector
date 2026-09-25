@@ -39,6 +39,10 @@ select,input{width:100%;padding:11px;border:1px solid #ddd;border-radius:11px;ba
 <div class="modal hidden" id="collectionModal"><div class="panel">
 <button class="close" id="collectionClose">×</button><h2>コレクション画像</h2>
 <div style="display:flex;gap:7px;margin-bottom:9px"><button class="light collectionMode" data-mode="owned" style="flex:1">✓ 所持</button><button class="light collectionMode" data-mode="wanted" style="flex:1">☆ 欲しい</button><button class="light collectionMode" data-mode="unowned" style="flex:1">○ 未所持</button></div><div id="collectionInfo" class="small" style="margin-bottom:10px"></div>
+<label style="display:flex;align-items:center;gap:7px;margin:8px 0;font-size:14px;">
+  <input type="checkbox" id="collectionShowUnselected">
+  選択していないカードも半透明で表示
+</label>
 <div style="background:#f7f5f8;border-radius:12px;padding:8px;overflow:auto"><canvas id="collectionCanvas" style="display:block;width:100%;height:auto;background:#fff;border-radius:8px"></canvas></div>
 <button id="collectionSave" style="width:100%;margin-top:10px">画像に保存</button>
 </div></div>
@@ -103,33 +107,80 @@ function openCard(id){let p=active();cur=p.cards.find(c=>c.id===id);$("modal").c
 function updateModal(){let o=getSet("owned",active().id),w=getSet("wanted",active().id);$("big").src=cur.image;$("title").textContent=cur.number+(cur.name?"　"+cur.name:"");$("info").textContent=active().name+"　"+cur.rarity;$("owned").textContent=o.has(cur.id)?"✓ 所持":"☐ 未所持";$("wanted").textContent=w.has(cur.id)?"★ 欲しい":"☆ 欲しい"}
 function proxyImageUrl(url){return "https://wsrv.nl/?url="+encodeURIComponent(url)+"&output=png"}
 let collectionMode="owned";
-function collectionCards(p,mode){const o=getSet("owned",p.id),w=getSet("wanted",p.id);if(mode==="wanted")return p.cards.filter(c=>w.has(c.id));if(mode==="unowned")return p.cards.filter(c=>!o.has(c.id));return p.cards.filter(c=>o.has(c.id));}
+function currentFilteredCards(p){
+ let o=getSet("owned",p.id),w=getSet("wanted",p.id),
+     q=$("q").value.trim().toLowerCase(),st=$("status").value,r=$("rarity").value;
+ return p.cards.filter(c=>
+   (!q||[c.number,c.name,c.rarity,c.search,c.keywords].flatMap(v=>Array.isArray(v)?v:[v]).filter(Boolean).join(" ").toLowerCase().includes(q))&&
+   (!r||c.rarity===r)&&
+   (!st||(st==="yes"&&o.has(c.id))||(st==="no"&&!o.has(c.id))||(st==="want"&&w.has(c.id)))
+ );
+}
+function collectionCards(p,mode){
+ const cards=currentFilteredCards(p),o=getSet("owned",p.id),w=getSet("wanted",p.id);
+ if(mode==="wanted")return cards.filter(c=>w.has(c.id));
+ if(mode==="unowned")return cards.filter(c=>!o.has(c.id));
+ return cards.filter(c=>o.has(c.id));
+}
 async function makeCollectionImage(mode=collectionMode){
- collectionMode=mode;let p=active();if(!p){alert("プロファイルがありません。");return}
- let cards=collectionCards(p,mode);
+ collectionMode=mode;
+ let p=active();if(!p){alert("プロファイルがありません。");return}
+ const filtered=currentFilteredCards(p);
+ const selected=collectionCards(p,mode);
+ const showUnselected=$("collectionShowUnselected").checked;
+ const cards=showUnselected?filtered:selected;
+ const selectedIds=new Set(selected.map(c=>c.id));
  if(!cards.length){alert((mode==="owned"?"所持":mode==="wanted"?"欲しい":"未所持")+"カードがありません。");return}
- $("collectionModal").classList.remove("hidden");$("collectionInfo").textContent=`${cards.length}枚の${mode==="owned"?"所持":mode==="wanted"?"欲しい":"未所持"}カードを画像にまとめています…`;
+ $("collectionModal").classList.remove("hidden");
+ $("collectionInfo").textContent=`${cards.length}枚を画像にまとめています…`;
  document.querySelectorAll(".collectionMode").forEach(b=>{b.style.background=b.dataset.mode===mode?"#222":"#eee";b.style.color=b.dataset.mode===mode?"#fff":"#222"});
  const n=cards.length;
- // 枚数が増えるほど列数を増やし、カード画像と文字を自動で少しずつ縮小する
  const cols=n<=12?3:n<=30?4:n<=60?5:6;
  const maxCanvasW=1800,pad=30,gap=18;
  const cellW=Math.floor((maxCanvasW-pad*2-gap*(cols-1))/cols);
  const imgW=Math.max(150,cellW-28);
  const imgH=Math.round(imgW*1.375);
  const labelH=58,titleH=105,rows=Math.ceil(n/cols),canvas=$("collectionCanvas");
- canvas.width=cols*cellW+pad*2+gap*(cols-1);canvas.height=titleH+rows*(imgH+labelH)+pad;const ctx=canvas.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);
- ctx.fillStyle="#222";ctx.font=`bold ${n>60?26:30}px -apple-system,BlinkMacSystemFont,sans-serif`;ctx.fillText(p.name,pad,48);ctx.font=`${n>60?18:21}px -apple-system,BlinkMacSystemFont,sans-serif`;ctx.fillText(`${mode==="owned"?"所持":mode==="wanted"?"欲しい":"未所持"} ${cards.length}枚`,pad,80);
+ canvas.width=cols*cellW+pad*2+gap*(cols-1);
+ canvas.height=titleH+rows*(imgH+labelH)+pad;
+ const ctx=canvas.getContext("2d");
+ ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);
+ ctx.fillStyle="#222";
+ ctx.font=`bold ${n>60?26:30}px -apple-system,BlinkMacSystemFont,sans-serif`;
+ ctx.fillText(p.name,pad,48);
+ ctx.font=`${n>60?18:21}px -apple-system,BlinkMacSystemFont,sans-serif`;
+ ctx.fillText(`${mode==="owned"?"所持":mode==="wanted"?"欲しい":"未所持"} ${selected.length}枚${showUnselected?"（未選択カードは半透明）":""}`,pad,80);
+
  const loaded=await Promise.all(cards.map(async c=>{
-   try{const img=new Image();img.crossOrigin="anonymous";img.src=proxyImageUrl(c.image);await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;setTimeout(()=>rej(new Error("timeout")),10000)});return {c,img}}
-   catch(e){return {c,img:null}}
+   try{
+     const img=new Image();img.crossOrigin="anonymous";img.src=proxyImageUrl(c.image);
+     await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;setTimeout(()=>rej(new Error("timeout")),10000)});
+     return {c,img};
+   }catch(e){return {c,img:null}}
  }));
- for(let i=0;i<loaded.length;i++){const {c,img}=loaded[i],x=pad+(i%cols)*(cellW+gap)+14,y=titleH+Math.floor(i/cols)*(imgH+labelH)+10;
-   if(img){const ratio=Math.min(imgW/img.naturalWidth,imgH/img.naturalHeight),w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;ctx.drawImage(img,x+(imgW-w)/2,y+(imgH-h)/2,w,h)}
-   else{ctx.fillStyle="#eee";ctx.fillRect(x,y,imgW,imgH);ctx.fillStyle="#777";ctx.font="20px sans-serif";ctx.fillText("画像を取得できません",x+35,y+220)}
-   ctx.fillStyle="#222";ctx.font=`bold ${n>60?17:20}px sans-serif`;ctx.fillText(c.number||"",x,y+imgH+25);ctx.font=`${n>60?15:18}px sans-serif`;ctx.fillText(c.rarity||"",x+Math.max(90,imgW-55),y+imgH+25);if(c.name){ctx.font=`${n>60?13:16}px sans-serif`;ctx.fillText(String(c.name).slice(0,18),x,y+imgH+48)}
+
+ for(let i=0;i<loaded.length;i++){
+   const {c,img}=loaded[i],
+         x=pad+(i%cols)*(cellW+gap)+14,
+         y=titleH+Math.floor(i/cols)*(imgH+labelH)+10;
+   ctx.save();
+   if(showUnselected&&!selectedIds.has(c.id))ctx.globalAlpha=0.28;
+   if(img){
+     const ratio=Math.min(imgW/img.naturalWidth,imgH/img.naturalHeight),
+           w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;
+     ctx.drawImage(img,x+(imgW-w)/2,y+(imgH-h)/2,w,h);
+   }else{
+     ctx.fillStyle="#eee";ctx.fillRect(x,y,imgW,imgH);
+     ctx.fillStyle="#777";ctx.font="20px sans-serif";ctx.fillText("画像を取得できません",x+35,y+220);
+   }
+   ctx.fillStyle="#222";ctx.font=`bold ${n>60?17:20}px sans-serif`;
+   ctx.fillText(c.number||"",x,y+imgH+25);
+   ctx.font=`${n>60?15:18}px sans-serif`;
+   ctx.fillText(c.rarity||"",x+Math.max(90,imgW-55),y+imgH+25);
+   if(c.name){ctx.font=`${n>60?13:16}px sans-serif`;ctx.fillText(String(c.name).slice(0,18),x,y+imgH+48)}
+   ctx.restore();
  }
- $("collectionInfo").textContent=`${cards.length}枚の${mode==="owned"?"所持":mode==="wanted"?"欲しい":"未所持"}カードをまとめました。`;
+ $("collectionInfo").textContent=`${cards.length}枚をまとめました。現在の絞り込みを反映しています。`;
 }
 function saveCollectionImage(){
  const canvas=$("collectionCanvas");
@@ -137,7 +188,9 @@ function saveCollectionImage(){
  catch(e){alert("画像を保存できませんでした。カード画像のサイト側の制限により、保存できない場合があります。")}
 }
 document.querySelectorAll(".collectionMode").forEach(b=>b.onclick=()=>makeCollectionImage(b.dataset.mode));
-$("collectionBtn").onclick=()=>makeCollectionImage(collectionMode);$("exportBtn").onclick=exportProfile;$("collectionSave").onclick=saveCollectionImage;$("collectionClose").onclick=()=>$("collectionModal").classList.add("hidden");$("importBtn").onclick=()=>$("file").click();$("sheetImport").onclick=()=>$("file").click();$("file").onchange=e=>{if(e.target.files[0])importFile(e.target.files[0]);e.target.value=""};
+$("collectionBtn").onclick=()=>makeCollectionImage(collectionMode);$("collectionShowUnselected").onchange=()=>{
+ if(!$("collectionModal").classList.contains("hidden")) makeCollectionImage(collectionMode);
+};$("exportBtn").onclick=exportProfile;$("collectionSave").onclick=saveCollectionImage;$("collectionClose").onclick=()=>$("collectionModal").classList.add("hidden");$("importBtn").onclick=()=>$("file").click();$("sheetImport").onclick=()=>$("file").click();$("file").onchange=e=>{if(e.target.files[0])importFile(e.target.files[0]);e.target.value=""};
 $("profilesBtn").onclick=()=>{$("profilesSheet").classList.remove("hidden");renderProfiles()};$("profilesClose").onclick=()=>$("profilesSheet").classList.add("hidden");
 $("profileSelect").onchange=e=>selectP(e.target.value);$("modalClose").onclick=()=>$("modal").classList.add("hidden");
 $("owned").onclick=()=>{let s=getSet("owned",active().id);s.has(cur.id)?s.delete(cur.id):s.add(cur.id);putSet("owned",active().id,s);render();updateModal()};

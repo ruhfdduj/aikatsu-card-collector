@@ -23,7 +23,7 @@ select,input{width:100%;padding:11px;border:1px solid #ddd;border-radius:11px;ba
 <div class="tools">
 <div class="top"><button id="profilesBtn">📚 プロファイル</button><button class="light" id="importBtn">＋ インポート</button></div>
 <div class="controls"><select id="status"><option value="">すべて</option><option value="no">未所持</option><option value="yes">所持</option><option value="want">欲しい</option></select><select id="rarity"><option value="">全レアリティ</option></select></div>
-<div class="top"><button id="collectionBtn" class="collectionBtn">🖼️ 画像に保存</button><button class="light" id="exportBtn">💾 エクスポート</button></div>
+<div class="top"><button class="collectionMode" data-mode="trade" style="margin-right:6px;">交換用モード</button><button id="collectionBtn" class="collectionBtn">🖼️ 画像に保存</button><button class="light" id="exportBtn">💾 エクスポート</button></div>
 </div>
 </header>
 <main class="grid" id="grid"></main>
@@ -39,9 +39,9 @@ select,input{width:100%;padding:11px;border:1px solid #ddd;border-radius:11px;ba
 <div class="modal hidden" id="collectionModal"><div class="panel">
 <button class="close" id="collectionClose">×</button><h2>コレクション画像</h2>
 <div style="display:flex;gap:7px;margin-bottom:9px"><button class="light collectionMode" data-mode="owned" style="flex:1">✓ 所持</button><button class="light collectionMode" data-mode="wanted" style="flex:1">☆ 欲しい</button><button class="light collectionMode" data-mode="unowned" style="flex:1">○ 未所持</button></div><div id="collectionInfo" class="small" style="margin-bottom:10px"></div>
-<label style="display:flex;align-items:center;gap:7px;margin:8px 0;font-size:14px;">
-  <input type="checkbox" id="collectionShowUnselected">
-  選択していないカードも半透明で表示
+<label style="display:inline-flex;align-items:center;gap:7px;margin:8px 0;font-size:14px;white-space:nowrap;writing-mode:horizontal-tb;">
+  <input type="checkbox" id="collectionShowUnselected" style="flex:0 0 auto;">
+  <span style="white-space:nowrap;">選択していないカードも半透明で表示</span>
 </label>
 <div style="background:#f7f5f8;border-radius:12px;padding:8px;overflow:auto"><canvas id="collectionCanvas" style="display:block;width:100%;height:auto;background:#fff;border-radius:8px"></canvas></div>
 <button id="collectionSave" style="width:100%;margin-top:10px">画像に保存</button>
@@ -122,14 +122,58 @@ function collectionCards(p,mode){
  if(mode==="unowned")return cards.filter(c=>!o.has(c.id));
  return cards.filter(c=>o.has(c.id));
 }
+
+function getTradeCount(c,p){
+  const key="ownedCount_"+p.id;
+  try{
+    const obj=JSON.parse(localStorage.getItem(key)||"{}");
+    return Math.max(0,parseInt(obj[c.id]||0,10)||0);
+  }catch(e){return 0}
+}
+function setTradeCount(c,p,n){
+  const key="ownedCount_"+p.id;
+  let obj={};
+  try{obj=JSON.parse(localStorage.getItem(key)||"{}")||{}}catch(e){}
+  obj[c.id]=Math.max(0,n);
+  localStorage.setItem(key,JSON.stringify(obj));
+}
+function openTradeMode(){
+  const p=active(); if(!p)return;
+  const cards=currentFilteredCards(p);
+  const overlay=document.createElement("div");
+  overlay.id="tradeModeOverlay";
+  overlay.style.cssText="position:fixed;inset:0;background:#fff;z-index:9999;overflow:auto;padding:16px;box-sizing:border-box;";
+  overlay.innerHTML=`<div style="max-width:900px;margin:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;">
+      <h2 style="margin:0;">交換用モード</h2>
+      <button id="tradeClose">閉じる</button>
+    </div>
+    <div style="font-size:14px;margin-bottom:14px;">現在の絞り込み中のカードについて、所持枚数を設定できます。</div>
+    <div id="tradeGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;"></div>
+  </div>`;
+  document.body.appendChild(overlay);
+  const grid=overlay.querySelector("#tradeGrid");
+  cards.forEach(c=>{
+    const count=getTradeCount(c,p);
+    const card=document.createElement("div");
+    card.style.cssText="border:1px solid #ddd;border-radius:10px;padding:8px;background:#fff;";
+    card.innerHTML=`<img src="${c.image}" style="width:100%;aspect-ratio:3/4;object-fit:contain;display:block;"><div style="font-weight:700;margin-top:5px;">${c.number||""}</div><div style="font-size:12px;">${c.name||""}</div><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:7px;"><button class="tradeMinus">−</button><strong class="tradeCount">${count}</strong><button class="tradePlus">＋</button></div>`;
+    card.querySelector(".tradeMinus").onclick=()=>{const n=Math.max(0,getTradeCount(c,p)-1);setTradeCount(c,p,n);card.querySelector(".tradeCount").textContent=n;};
+    card.querySelector(".tradePlus").onclick=()=>{const n=getTradeCount(c,p)+1;setTradeCount(c,p,n);card.querySelector(".tradeCount").textContent=n;};
+    grid.appendChild(card);
+  });
+  overlay.querySelector("#tradeClose").onclick=()=>overlay.remove();
+}
 async function makeCollectionImage(mode=collectionMode){
  collectionMode=mode;
  let p=active();if(!p){alert("プロファイルがありません。");return}
  const filtered=currentFilteredCards(p);
  const selected=collectionCards(p,mode);
+ const noSelection = selected.length===0 && !($("status").value);
+ const effectiveSelected = noSelection ? filtered : selected;
  const showUnselected=$("collectionShowUnselected").checked;
- const cards=showUnselected?filtered:selected;
- const selectedIds=new Set(selected.map(c=>c.id));
+ const cards=showUnselected?filtered:effectiveSelected;
+ const selectedIds=new Set(effectiveSelected.map(c=>c.id));
  if(!cards.length){alert((mode==="owned"?"所持":mode==="wanted"?"欲しい":"未所持")+"カードがありません。");return}
  $("collectionModal").classList.remove("hidden");
  $("collectionInfo").textContent=`${cards.length}枚を画像にまとめています…`;
@@ -149,7 +193,7 @@ async function makeCollectionImage(mode=collectionMode){
  ctx.font=`bold ${n>60?26:30}px -apple-system,BlinkMacSystemFont,sans-serif`;
  ctx.fillText(p.name,pad,48);
  ctx.font=`${n>60?18:21}px -apple-system,BlinkMacSystemFont,sans-serif`;
- ctx.fillText(`${mode==="owned"?"所持":mode==="wanted"?"欲しい":"未所持"} ${selected.length}枚${showUnselected?"（未選択カードは半透明）":""}`,pad,80);
+ ctx.fillText(`${noSelection?"全表示":(mode==="owned"?"所持":mode==="wanted"?"欲しい":"未所持")} ${effectiveSelected.length}枚${showUnselected?"（未選択カードは半透明）":""}`,pad,80);
 
  const loaded=await Promise.all(cards.map(async c=>{
    try{
@@ -188,7 +232,7 @@ function saveCollectionImage(){
  catch(e){alert("画像を保存できませんでした。カード画像のサイト側の制限により、保存できない場合があります。")}
 }
 document.querySelectorAll(".collectionMode").forEach(b=>b.onclick=()=>makeCollectionImage(b.dataset.mode));
-$("collectionBtn").onclick=()=>makeCollectionImage(collectionMode);$("collectionShowUnselected").onchange=()=>{
+$("collectionBtn").onclick=()=>makeCollectionImage(collectionMode);document.querySelector('[data-mode="trade"]')?.addEventListener("click",openTradeMode);$("collectionShowUnselected").onchange=()=>{
  if(!$("collectionModal").classList.contains("hidden")) makeCollectionImage(collectionMode);
 };$("exportBtn").onclick=exportProfile;$("collectionSave").onclick=saveCollectionImage;$("collectionClose").onclick=()=>$("collectionModal").classList.add("hidden");$("importBtn").onclick=()=>$("file").click();$("sheetImport").onclick=()=>$("file").click();$("file").onchange=e=>{if(e.target.files[0])importFile(e.target.files[0]);e.target.value=""};
 $("profilesBtn").onclick=()=>{$("profilesSheet").classList.remove("hidden");renderProfiles()};$("profilesClose").onclick=()=>$("profilesSheet").classList.add("hidden");

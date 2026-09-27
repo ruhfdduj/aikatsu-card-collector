@@ -143,24 +143,66 @@ function openTradeMode(){
   const overlay=document.createElement("div");
   overlay.id="tradeModeOverlay";
   overlay.style.cssText="position:fixed;inset:0;background:#fff;z-index:9999;overflow:auto;padding:16px;box-sizing:border-box;";
-  overlay.innerHTML=`<div style="max-width:900px;margin:auto;">
+  overlay.innerHTML=`<div style="max-width:1200px;margin:auto;">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;">
-      <h2 style="margin:0;">交換用モード</h2>
-      <button id="tradeClose">閉じる</button>
+      <h2 style="margin:0;">交換用モード</h2><button id="tradeClose">閉じる</button>
     </div>
-    <div style="font-size:14px;margin-bottom:14px;">現在の絞り込み中のカードについて、所持枚数を設定できます。</div>
-    <div id="tradeGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;"></div>
+    <div style="font-size:14px;margin-bottom:14px;">インポートしたカードを通常と同じカード表示で並べ、カード下部の－＋で所持枚数を変更できます。</div>
+    <div id="tradeRows"></div>
   </div>`;
   document.body.appendChild(overlay);
-  const grid=overlay.querySelector("#tradeGrid");
+  const rows=overlay.querySelector("#tradeRows");
+
+  // コーデ単位でまとめる。JSON側にコーデ名がある場合はそれを使用。
+  const groups=[], map=new Map();
   cards.forEach(c=>{
-    const count=getTradeCount(c,p);
-    const card=document.createElement("div");
-    card.style.cssText="border:1px solid #ddd;border-radius:10px;padding:8px;background:#fff;";
-    card.innerHTML=`<img src="${c.image}" style="width:100%;aspect-ratio:3/4;object-fit:contain;display:block;"><div style="font-weight:700;margin-top:5px;">${c.number||""}</div><div style="font-size:12px;">${c.name||""}</div><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:7px;"><button class="tradeMinus">−</button><strong class="tradeCount">${count}</strong><button class="tradePlus">＋</button></div>`;
-    card.querySelector(".tradeMinus").onclick=()=>{const n=Math.max(0,getTradeCount(c,p)-1);setTradeCount(c,p,n);card.querySelector(".tradeCount").textContent=n;};
-    card.querySelector(".tradePlus").onclick=()=>{const n=getTradeCount(c,p)+1;setTradeCount(c,p,n);card.querySelector(".tradeCount").textContent=n;};
-    grid.appendChild(card);
+    const key=c.coordinate||c.coord||c.outfit||c.coodinate||c.coodinateName||c.outfitName||c.id;
+    if(!map.has(key)){
+      const g={key,title:c.coordinate||c.coord||c.outfit||c.coodinate||c.coodinateName||c.outfitName||"" ,cards:[]};
+      map.set(key,g); groups.push(g);
+    }
+    map.get(key).cards.push(c);
+  });
+
+  groups.forEach((g,gi)=>{
+    const row=document.createElement("div");
+    row.style.cssText="margin-bottom:24px;";
+    if(g.title){
+      const title=document.createElement("div");
+      title.textContent=g.title;
+      title.style.cssText="font-weight:700;font-size:16px;margin:0 0 8px;";
+      row.appendChild(title);
+    }
+    const grid=document.createElement("div");
+    grid.style.cssText="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;";
+    g.cards.forEach(c=>{
+      const count=getTradeCount(c,p);
+      const card=document.createElement("div");
+      card.className="card";
+      card.style.cssText="position:relative;overflow:hidden;";
+      card.innerHTML=`
+        <img src="${c.image}" alt="${c.number||""}" style="width:100%;display:block;">
+        <div class="card-info">
+          <div class="card-number">${c.number||""}</div>
+          <div class="card-name">${c.name||""}</div>
+          <div class="card-rarity">${c.rarity||""}</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:14px;padding:7px 8px 9px;border-top:1px solid #eee;">
+          <button class="tradeMinus" style="width:32px;height:32px;font-size:22px;line-height:1;">−</button>
+          <strong class="tradeCount" style="min-width:24px;text-align:center;font-size:17px;">${count}</strong>
+          <button class="tradePlus" style="width:32px;height:32px;font-size:22px;line-height:1;">＋</button>
+        </div>`;
+      const countEl=card.querySelector(".tradeCount");
+      card.querySelector(".tradeMinus").onclick=()=>{
+        const n=Math.max(0,getTradeCount(c,p)-1); setTradeCount(c,p,n); countEl.textContent=n;
+      };
+      card.querySelector(".tradePlus").onclick=()=>{
+        const n=getTradeCount(c,p)+1; setTradeCount(c,p,n); countEl.textContent=n;
+      };
+      grid.appendChild(card);
+    });
+    row.appendChild(grid);
+    rows.appendChild(row);
   });
   overlay.querySelector("#tradeClose").onclick=()=>overlay.remove();
 }

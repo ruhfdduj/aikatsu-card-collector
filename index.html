@@ -183,12 +183,12 @@ function openTradeMode(){
       row.appendChild(title);
     }
     const grid=document.createElement("div");
-    grid.style.cssText="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;";
+    grid.style.cssText="display:flex;flex-wrap:nowrap;gap:10px;overflow-x:auto;overflow-y:hidden;padding-bottom:6px;align-items:flex-start;";
     g.cards.forEach(c=>{
       const count=getTradeCount(c,p);
       const card=document.createElement("div");
       card.className="card";
-      card.style.cssText="position:relative;overflow:hidden;";
+      card.style.cssText="position:relative;overflow:hidden;flex:0 0 150px;width:150px;";
       card.innerHTML=`
         <img src="${c.image}" alt="${c.number||""}" style="width:100%;display:block;">
         <div class="card-info">

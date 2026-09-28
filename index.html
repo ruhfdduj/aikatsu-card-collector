@@ -273,6 +273,7 @@ function syncFavoriteMode(){
   b.textContent=favoriteOnly?"★ お気に入り":"☆ お気に入り";
 }
 $("favoriteModeBtn").onclick=()=>{favoriteOnly=!favoriteOnly;syncFavoriteMode();render()};
+$("collectionBtn").onclick=()=>{makeCollectionImage("owned")};
 $("collectionShowUnselected").onchange=()=>{if(!$("collectionModal").classList.contains("hidden"))makeCollectionImage(collectionMode)};
 $("collectionGroupByCoordinate").onchange=()=>{if(!$("collectionModal").classList.contains("hidden"))makeCollectionImage(collectionMode)};
 $("collectionSave").onclick=saveCollectionImage;$('collectionClose').onclick=()=>$("collectionModal").classList.add("hidden");

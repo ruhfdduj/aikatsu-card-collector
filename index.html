@@ -12,7 +12,7 @@ button{font:inherit;border:0;border-radius:10px;padding:9px 11px;background:#222
 select,input{width:100%;padding:11px;border:1px solid #ddd;border-radius:11px;background:#fff;font-size:16px}
 .stats{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin:12px 0 7px}.progress{height:8px;background:#eee;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;width:0;background:#222}
 .controls{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}.controls input{grid-column:1/-1}
-.grid{padding:12px}.coordRow{margin-bottom:20px}.coordTitle{font-size:14px;font-weight:800;margin:0 0 7px 2px}.coordScroll{display:flex;gap:9px;overflow-x:auto;overflow-y:hidden;padding:2px 2px 7px}.coordScroll>.card{flex:0 0 118px;width:118px}.card{background:#fff;border-radius:12px;padding:6px;position:relative;box-shadow:0 1px 7px #0001}.card img{width:100%;height:auto;aspect-ratio:auto;object-fit:contain;display:block;border-radius:8px;background:#eee}.imageWrap{position:relative}.imageWrap img{width:100%;height:auto;aspect-ratio:auto;object-fit:contain;display:block;border-radius:8px;background:#eee}.countControls{display:flex;align-items:center;justify-content:center;gap:8px;padding:4px 2px 5px}.countControls button{width:30px;height:30px;padding:0;border-radius:8px;font-size:20px;line-height:1;background:#eee;color:#222}.cardCount{min-width:24px;text-align:center;font-size:15px}.want{position:absolute;left:8px;bottom:8px;top:auto;border-radius:7px;width:30px;height:30px;padding:0;background:#fff;color:#222;box-shadow:0 2px 8px #0003;border:2px solid #aaa;z-index:2;font-size:18px;line-height:26px}.wanted .want{background:#fff;color:#d08a00;border-color:#d08a00}.meta{font-size:11px;display:flex;justify-content:space-between;padding:6px 2px 1px;font-weight:700}.card.owned{outline:2px solid #222}
+.grid{padding:12px}.coordRow{margin-bottom:20px}.coordTitle{font-size:14px;font-weight:800;margin:0 0 7px 2px}.coordScroll{display:flex;gap:9px;overflow-x:auto;overflow-y:hidden;padding:2px 2px 7px}.coordScroll>.card{flex:0 0 118px;width:118px}.card{background:#fff;border-radius:12px;padding:6px;position:relative;box-shadow:0 1px 7px #0001}.card img{width:100%;height:auto;aspect-ratio:auto;object-fit:contain;display:block;border-radius:8px;background:#eee}.imageWrap{position:relative}.imageWrap img{width:100%;height:auto;aspect-ratio:auto;object-fit:contain;display:block;border-radius:8px;background:#eee}.countControls{display:flex;align-items:center;justify-content:center;gap:8px;padding:4px 2px 5px}.countControls button{width:30px;height:30px;padding:0;border-radius:8px;font-size:20px;line-height:1;background:#eee;color:#222}.cardCount{min-width:24px;text-align:center;font-size:15px}.want{position:absolute;left:8px;bottom:8px;top:auto;border-radius:7px;width:30px;height:30px;padding:0;background:#fff;color:#222;box-shadow:0 2px 8px #0003;border:2px solid #aaa;z-index:2;font-size:18px;line-height:26px}.wanted .want{background:#fff;color:#d08a00;border-color:#d08a00}.check{position:absolute;right:8px;bottom:8px;top:auto;border-radius:7px;width:30px;height:30px;padding:0;background:#fff;color:#222;box-shadow:0 2px 8px #0003;border:2px solid #aaa;z-index:2;font-size:18px;line-height:26px}.owned .check{background:#222;color:#fff;border-color:#222}.meta{font-size:11px;display:flex;justify-content:space-between;padding:6px 2px 1px;font-weight:700}.card.owned{outline:2px solid #222}
 .sheet,.modal{position:fixed;inset:0;background:#0009;z-index:20;padding:18px;display:grid;place-items:center}.hidden{display:none}.panel{background:#fff;border-radius:18px;padding:15px;width:min(500px,100%);max-height:90vh;overflow:auto}.panel h2{margin:3px 0 8px;font-size:19px}.close{float:right;width:34px;height:34px;border-radius:50%;padding:0;background:#eee;color:#222;font-size:20px}.profileRow{display:flex;gap:8px;align-items:center;padding:12px 0;border-bottom:1px solid #eee}.menuSheet{position:fixed;inset:0;background:#0007;z-index:30}.menuPanel{position:absolute;top:0;right:0;width:min(390px,88vw);height:100%;background:#fff;box-shadow:-4px 0 20px #0002;overflow:auto}.menuHead{display:flex;align-items:center;justify-content:space-between;padding:18px 16px;border-bottom:1px solid #eee}.menuHead h2{margin:0;font-size:22px}.menuSection{padding:16px;border-bottom:1px solid #eee}.menuLabel{font-size:13px;color:#777;font-weight:700;margin-bottom:8px}.menuItem{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#fff;color:#252329;padding:12px 0;border-radius:0;font-weight:600}.menuItem+.menuItem{border-top:1px solid #f1f1f1}.menuIcon{width:24px;text-align:center;font-size:19px}.menuProfile{font-size:17px;font-weight:800;line-height:1.35}.menuSub{font-size:12px;color:#888;margin-top:3px}.profileRow .name{flex:1;font-weight:700}.small{font-size:12px;color:#777}.collectionOption{display:flex;align-items:center;gap:7px;margin:3px 0;font-size:14px;white-space:nowrap}.collectionOption input{width:18px;min-width:18px;height:18px;padding:0;margin:0}.file{display:none}.msg{text-align:center;padding:30px 15px;color:#777}
 </style></head><body>
 <header>
@@ -129,8 +129,8 @@ function render(){
  let rar=[...new Set(p.cards.map(c=>c.rarity).filter(Boolean))];$('rarity').innerHTML='<option value="">全レアリティ</option>'+rar.map(x=>`<option>${esc(x)}</option>`).join('');$('rarity').value=r;
  let list=p.cards.filter(c=>(!q||[c.number,c.name,c.rarity,c.search,c.keywords].flatMap(v=>Array.isArray(v)?v:[v]).filter(Boolean).join(' ').toLowerCase().includes(q))&&(!r||c.rarity===r)&&(!st||(st==='yes'&&getOwnedCount(c,p)>0)||(st==='no'&&getOwnedCount(c,p)===0)||(st==='want'&&w.has(c.id))));
  const groups=groupCardsByCoordinate(list);
- $('grid').innerHTML=groups.map(g=>`<section class="coordRow">${g.title?`<div class="coordTitle">${esc(g.title)}</div>`:''}<div class="coordScroll">${g.cards.map(c=>{const n=getOwnedCount(c,p);return `<article class="card ${n>0?'owned':''} ${w.has(c.id)?'wanted':''}" data-id="${esc(c.id)}"><div class="imageWrap"><img loading="lazy" src="${esc(c.image)}" alt="${esc(c.number)}"><button class="want" aria-label="お気に入り">${w.has(c.id)?'★':'☆'}</button></div><div class="countControls"><button class="countMinus" aria-label="1枚減らす">−</button><strong class="cardCount">${n}</strong><button class="countPlus" aria-label="1枚増やす">＋</button></div><div class="meta"><span>${esc(c.number)}</span><span>${esc(c.rarity)}</span></div><div style="font-size:11px;font-weight:700;line-height:1.35;padding:0 2px 2px;min-height:30px;">${esc(c.name||'')}</div></article>`}).join('')}</div></section>`).join('');
- document.querySelectorAll('#grid .card').forEach(e=>{e.onclick=()=>openCard(e.dataset.id);const c=p.cards.find(x=>x.id===e.dataset.id);e.querySelector('.countMinus').onclick=ev=>{ev.stopPropagation();setOwnedCount(c,p,getOwnedCount(c,p)-1);render()};e.querySelector('.countPlus').onclick=ev=>{ev.stopPropagation();setOwnedCount(c,p,getOwnedCount(c,p)+1);render()};e.querySelector('.want').onclick=ev=>{ev.stopPropagation();const ss=getSet('wanted',p.id);ss.has(e.dataset.id)?ss.delete(e.dataset.id):ss.add(e.dataset.id);putSet('wanted',p.id,ss);render()}});
+ $('grid').innerHTML=groups.map(g=>`<section class="coordRow">${g.title?`<div class="coordTitle">${esc(g.title)}</div>`:''}<div class="coordScroll">${g.cards.map(c=>{const n=getOwnedCount(c,p);return `<article class="card ${n>0?'owned':''} ${w.has(c.id)?'wanted':''}" data-id="${esc(c.id)}"><div class="imageWrap"><img loading="lazy" src="${esc(c.image)}" alt="${esc(c.number)}"><button class="want" aria-label="お気に入り">${w.has(c.id)?'★':'☆'}</button><button class="check" aria-label="所持">${n>0?'✓':'□'}</button></div><div class="countControls"><button class="countMinus" aria-label="1枚減らす">−</button><strong class="cardCount">${n}</strong><button class="countPlus" aria-label="1枚増やす">＋</button></div><div class="meta"><span>${esc(c.number)}</span><span>${esc(c.rarity)}</span></div><div style="font-size:11px;font-weight:700;line-height:1.35;padding:0 2px 2px;min-height:30px;">${esc(c.name||'')}</div></article>`}).join('')}</div></section>`).join('');
+ document.querySelectorAll('#grid .card').forEach(e=>{e.onclick=()=>openCard(e.dataset.id);const c=p.cards.find(x=>x.id===e.dataset.id);e.querySelector('.countMinus').onclick=ev=>{ev.stopPropagation();setOwnedCount(c,p,getOwnedCount(c,p)-1);render()};e.querySelector('.countPlus').onclick=ev=>{ev.stopPropagation();setOwnedCount(c,p,getOwnedCount(c,p)+1);render()};e.querySelector('.check').onclick=ev=>{ev.stopPropagation();setOwnedCount(c,p,getOwnedCount(c,p)>0?0:1);render()};e.querySelector('.want').onclick=ev=>{ev.stopPropagation();const ss=getSet('wanted',p.id);ss.has(e.dataset.id)?ss.delete(e.dataset.id):ss.add(e.dataset.id);putSet('wanted',p.id,ss);render()}});
  let ownedCards=p.cards.filter(c=>getOwnedCount(c,p)>0).length,pct=p.cards.length?Math.round(ownedCards/p.cards.length*100):0;$('count').textContent=`${ownedCards} / ${p.cards.length}`;$('pct').textContent=pct+'%';
 }
 function openCard(id){let p=active();cur=p.cards.find(c=>c.id===id);$("modal").classList.remove("hidden");updateModal()}
@@ -157,30 +157,47 @@ function collectionCards(p,mode){
 
 async function loadCanvasImage(url){
   if(!url)return null;
-  const sources=[
-    proxyImageUrl(url),
+  const candidates=[
     "https://images.weserv.nl/?url="+encodeURIComponent(url)+"&output=png",
+    "https://wsrv.nl/?url="+encodeURIComponent(url)+"&output=png",
     url
   ];
-  for(const src of sources){
+  // まずfetch→Blob→ObjectURLで取得。これならCanvasに載せても汚染されにくい。
+  for(const src of candidates.slice(0,2)){
+    try{
+      const res=await fetch(src,{mode:'cors',cache:'force-cache'});
+      if(!res.ok)continue;
+      const blob=await res.blob();
+      if(!blob.size)continue;
+      const objectUrl=URL.createObjectURL(blob);
+      try{
+        const img=new Image();
+        img.decoding='async';
+        await new Promise((resolve,reject)=>{
+          const timer=setTimeout(()=>reject(new Error('timeout')),10000);
+          img.onload=()=>{clearTimeout(timer);resolve()};
+          img.onerror=()=>{clearTimeout(timer);reject(new Error('load failed'))};
+          img.src=objectUrl;
+        });
+        if(img.naturalWidth&&img.naturalHeight)return img;
+      }finally{URL.revokeObjectURL(objectUrl)}
+    }catch(e){}
+  }
+  // fetchできない環境では、従来方式も試す。
+  for(const src of candidates){
     try{
       const img=new Image();
       img.crossOrigin='anonymous';
       img.decoding='async';
-      const loaded=new Promise((res,rej)=>{
-        const timer=setTimeout(()=>rej(new Error('timeout')),10000);
-        img.onload=()=>{clearTimeout(timer);res()};
-        img.onerror=()=>{clearTimeout(timer);rej(new Error('load failed'))};
+      await new Promise((resolve,reject)=>{
+        const timer=setTimeout(()=>reject(new Error('timeout')),10000);
+        img.onload=()=>{clearTimeout(timer);resolve()};
+        img.onerror=()=>{clearTimeout(timer);reject(new Error('load failed'))};
+        img.src=src;
       });
-      img.src=src;
-      await loaded;
       if(!img.naturalWidth||!img.naturalHeight)continue;
-      // CORS不可の画像はCanvasに描くと保存時に失敗するため、ここで確認して次の経路へ。
-      const test=document.createElement('canvas');
-      test.width=1;test.height=1;
-      const tctx=test.getContext('2d');
-      tctx.drawImage(img,0,0,1,1);
-      tctx.getImageData(0,0,1,1);
+      const test=document.createElement('canvas');test.width=1;test.height=1;
+      const tctx=test.getContext('2d');tctx.drawImage(img,0,0,1,1);tctx.getImageData(0,0,1,1);
       return img;
     }catch(e){}
   }

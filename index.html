@@ -12,7 +12,7 @@ button{font:inherit;border:0;border-radius:10px;padding:9px 11px;background:#222
 select,input{width:100%;padding:11px;border:1px solid #ddd;border-radius:11px;background:#fff;font-size:16px}
 .stats{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin:12px 0 7px}.progress{height:8px;background:#eee;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;width:0;background:#222}
 .controls{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}.controls input{grid-column:1/-1}
-.grid{padding:12px}.coordRow{margin-bottom:20px}.coordTitle{font-size:14px;font-weight:800;margin:0 0 7px 2px}.coordScroll{display:flex;gap:9px;overflow-x:auto;overflow-y:hidden;padding:2px 2px 7px}.coordScroll>.card{flex:0 0 118px;width:118px}.card{background:#fff;border-radius:12px;padding:6px;position:relative;box-shadow:0 1px 7px #0001}.card img{width:100%;height:auto;aspect-ratio:auto;object-fit:contain;display:block;border-radius:8px;background:#eee}.imageWrap{position:relative}.imageWrap img{width:100%;height:auto;aspect-ratio:auto;object-fit:contain;display:block;border-radius:8px;background:#eee}.want{position:absolute;left:8px;bottom:8px;top:auto;border-radius:7px;width:30px;height:30px;padding:0;background:#fff;color:#222;box-shadow:0 2px 8px #0003;border:2px solid #aaa;z-index:2;font-size:18px;line-height:26px}.wanted .want{background:#fff;color:#d08a00;border-color:#d08a00}.meta{font-size:11px;display:flex;justify-content:space-between;padding:6px 2px 1px;font-weight:700}.card.owned{outline:2px solid #222}.check{position:absolute;right:8px;bottom:8px;top:auto;border-radius:7px;width:30px;height:30px;padding:0;background:#fff;color:#222;box-shadow:0 2px 8px #0003;border:2px solid #aaa;z-index:2;font-size:18px;line-height:26px}.owned .check{background:#222;color:#fff;border-color:#222}
+.grid{padding:12px}.coordRow{margin-bottom:20px}.coordTitle{font-size:14px;font-weight:800;margin:0 0 7px 2px}.coordScroll{display:flex;gap:9px;overflow-x:auto;overflow-y:hidden;padding:2px 2px 7px}.coordScroll>.card{flex:0 0 118px;width:118px}.card{background:#fff;border-radius:12px;padding:6px;position:relative;box-shadow:0 1px 7px #0001}.card img{width:100%;height:auto;aspect-ratio:auto;object-fit:contain;display:block;border-radius:8px;background:#eee}.imageWrap{position:relative}.imageWrap img{width:100%;height:auto;aspect-ratio:auto;object-fit:contain;display:block;border-radius:8px;background:#eee}.countControls{display:flex;align-items:center;justify-content:center;gap:8px;padding:4px 2px 5px}.countControls button{width:30px;height:30px;padding:0;border-radius:8px;font-size:20px;line-height:1;background:#eee;color:#222}.cardCount{min-width:24px;text-align:center;font-size:15px}.want{position:absolute;left:8px;bottom:8px;top:auto;border-radius:7px;width:30px;height:30px;padding:0;background:#fff;color:#222;box-shadow:0 2px 8px #0003;border:2px solid #aaa;z-index:2;font-size:18px;line-height:26px}.wanted .want{background:#fff;color:#d08a00;border-color:#d08a00}.meta{font-size:11px;display:flex;justify-content:space-between;padding:6px 2px 1px;font-weight:700}.card.owned{outline:2px solid #222}
 .sheet,.modal{position:fixed;inset:0;background:#0009;z-index:20;padding:18px;display:grid;place-items:center}.hidden{display:none}.panel{background:#fff;border-radius:18px;padding:15px;width:min(500px,100%);max-height:90vh;overflow:auto}.panel h2{margin:3px 0 8px;font-size:19px}.close{float:right;width:34px;height:34px;border-radius:50%;padding:0;background:#eee;color:#222;font-size:20px}.profileRow{display:flex;gap:8px;align-items:center;padding:12px 0;border-bottom:1px solid #eee}.menuSheet{position:fixed;inset:0;background:#0007;z-index:30}.menuPanel{position:absolute;top:0;right:0;width:min(390px,88vw);height:100%;background:#fff;box-shadow:-4px 0 20px #0002;overflow:auto}.menuHead{display:flex;align-items:center;justify-content:space-between;padding:18px 16px;border-bottom:1px solid #eee}.menuHead h2{margin:0;font-size:22px}.menuSection{padding:16px;border-bottom:1px solid #eee}.menuLabel{font-size:13px;color:#777;font-weight:700;margin-bottom:8px}.menuItem{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#fff;color:#252329;padding:12px 0;border-radius:0;font-weight:600}.menuItem+.menuItem{border-top:1px solid #f1f1f1}.menuIcon{width:24px;text-align:center;font-size:19px}.menuProfile{font-size:17px;font-weight:800;line-height:1.35}.menuSub{font-size:12px;color:#888;margin-top:3px}.profileRow .name{flex:1;font-weight:700}.small{font-size:12px;color:#777}.collectionOption{display:flex;align-items:center;gap:7px;margin:3px 0;font-size:14px;white-space:nowrap}.collectionOption input{width:18px;min-width:18px;height:18px;padding:0;margin:0}.file{display:none}.msg{text-align:center;padding:30px 15px;color:#777}
 </style></head><body>
 <header>
@@ -22,7 +22,7 @@ select,input{width:100%;padding:11px;border:1px solid #ddd;border-radius:11px;ba
 </div>
 <div class="tools">
 <div class="controls"><select id="status"><option value="">すべて</option><option value="yes">所持済</option><option value="no">未所持</option></select><select id="rarity"><option value="">全レアリティ</option></select></div>
-<div class="top"><button id="favoriteModeBtn" class="compactBtn">☆ お気に入り</button><button class="collectionMode compactBtn" data-mode="trade">交換用モード</button><button id="collectionBtn" class="collectionBtn compactBtn">画像に保存</button></div>
+<div class="top"><button id="favoriteModeBtn" class="compactBtn">☆ お気に入り</button><button id="collectionBtn" class="collectionBtn compactBtn">画像に保存</button></div>
 </div>
 </header>
 <main class="grid" id="grid"></main>
@@ -69,7 +69,7 @@ function exportProfile(){
  let p=active();
  if(!p){alert("プロファイルがありません。");return}
  const o=getSet("owned",p.id),w=getSet("wanted",p.id);
- const tradeObj=(()=>{try{return JSON.parse(localStorage.getItem("ownedCount_"+p.id)||"{}")||{}}catch(e){return {}}})(); const out={profileVersion:p.profileVersion||1,id:p.id,name:p.name,cards:p.cards.map(c=>({...c,owned:o.has(c.id),wanted:w.has(c.id),tradeCount:Object.prototype.hasOwnProperty.call(tradeObj,c.id)?tradeObj[c.id]:(c.tradeCount??c.ownedCount??c.quantity??c.count)}))};
+ const out={profileVersion:p.profileVersion||1,id:p.id,name:p.name,cards:p.cards.map(c=>({...c,owned:getOwnedCount(c,p)>0,wanted:w.has(c.id),ownedCount:getOwnedCount(c,p)}))};
  const blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json;charset=utf-8"});
  const url=URL.createObjectURL(blob),a=document.createElement("a");
  a.href=url;a.download=(p.id||"card-profile")+"-collection.json";document.body.appendChild(a);a.click();a.remove();
@@ -112,21 +112,26 @@ function groupCardsByCoordinate(cards){
  });
  return groups;
 }
+function getOwnedCount(c,p){
+ const key="ownedCount_"+p.id;
+ try{const obj=JSON.parse(localStorage.getItem(key)||"{}")||{};if(Object.prototype.hasOwnProperty.call(obj,c.id)){const n=parseInt(obj[c.id],10);return Number.isFinite(n)?Math.max(0,n):0;}}catch(e){}
+ for(const k of ["tradeCount","ownedCount","quantity","count"]){if(c[k]!==undefined&&c[k]!==null&&c[k]!==""){const n=parseInt(c[k],10);if(Number.isFinite(n))return Math.max(0,n);}}
+ return getSet("owned",p.id).has(c.id)?1:0;
+}
+function setOwnedCount(c,p,n){
+ n=Math.max(0,parseInt(n,10)||0);const key="ownedCount_"+p.id;let obj={};
+ try{obj=JSON.parse(localStorage.getItem(key)||"{}")||{}}catch(e){} obj[c.id]=n;localStorage.setItem(key,JSON.stringify(obj));
+ const s=getSet("owned",p.id);if(n>0)s.add(c.id);else s.delete(c.id);putSet("owned",p.id,s);
+}
 function render(){
  let p=active();if(!p){$('grid').innerHTML='<div class="msg">まず「＋ インポート」からプロファイルを追加してください。</div>';$('count').textContent='0 / 0';$('pct').textContent='0%';return}
- let o=getSet('owned',p.id),w=getSet('wanted',p.id),q=$('q').value.trim().toLowerCase(),st=$('status').value,r=$('rarity').value;
+ let w=getSet('wanted',p.id),q=$('q').value.trim().toLowerCase(),st=$('status').value,r=$('rarity').value;
  let rar=[...new Set(p.cards.map(c=>c.rarity).filter(Boolean))];$('rarity').innerHTML='<option value="">全レアリティ</option>'+rar.map(x=>`<option>${esc(x)}</option>`).join('');$('rarity').value=r;
- let list=p.cards.filter(c=>(!q||[c.number,c.name,c.rarity,c.search,c.keywords].flatMap(v=>Array.isArray(v)?v:[v]).filter(Boolean).join(' ').toLowerCase().includes(q))&&(!r||c.rarity===r)&&(!st||(st==='yes'&&o.has(c.id))||(st==='no'&&!o.has(c.id))||(st==='want'&&w.has(c.id))));
+ let list=p.cards.filter(c=>(!q||[c.number,c.name,c.rarity,c.search,c.keywords].flatMap(v=>Array.isArray(v)?v:[v]).filter(Boolean).join(' ').toLowerCase().includes(q))&&(!r||c.rarity===r)&&(!st||(st==='yes'&&getOwnedCount(c,p)>0)||(st==='no'&&getOwnedCount(c,p)===0)||(st==='want'&&w.has(c.id))));
  const groups=groupCardsByCoordinate(list);
- $('grid').innerHTML=groups.map(g=>`<section class="coordRow">${g.title?`<div class="coordTitle">${esc(g.title)}</div>`:''}<div class="coordScroll">${g.cards.map(c=>`<article class="card ${o.has(c.id)?'owned':''} ${w.has(c.id)?'wanted':''}" data-id="${esc(c.id)}"><div class="imageWrap"><img loading="lazy" src="${esc(c.image)}" alt="${esc(c.number)}"><button class="want" aria-label="お気に入り">${w.has(c.id)?'★':'☆'}</button><button class="check" aria-label="所持">${o.has(c.id)?'✓':'□'}</button></div><div class="meta"><span>${esc(c.number)}</span><span>${esc(c.rarity)}</span></div><div style="font-size:11px;font-weight:700;line-height:1.35;padding:0 2px 2px;min-height:30px;">${esc(c.name||'')}</div></article>`).join('')}</div></section>`).join('');
- document.querySelectorAll('#grid .card').forEach(e=>{
-   e.onclick=()=>openCard(e.dataset.id);
-   const btn=e.querySelector('.check');
-   btn.onclick=(ev)=>{ev.stopPropagation();const s=getSet('owned',active().id);s.has(e.dataset.id)?s.delete(e.dataset.id):s.add(e.dataset.id);putSet('owned',active().id,s);render()};
-   const want=e.querySelector('.want');
-   want.onclick=(ev)=>{ev.stopPropagation();const s=getSet('wanted',active().id);s.has(e.dataset.id)?s.delete(e.dataset.id):s.add(e.dataset.id);putSet('wanted',active().id,s);render()};
- });
- let pct=p.cards.length?Math.round(o.size/p.cards.length*100):0;$('count').textContent=`${o.size} / ${p.cards.length}`;$('pct').textContent=pct+'%';
+ $('grid').innerHTML=groups.map(g=>`<section class="coordRow">${g.title?`<div class="coordTitle">${esc(g.title)}</div>`:''}<div class="coordScroll">${g.cards.map(c=>{const n=getOwnedCount(c,p);return `<article class="card ${n>0?'owned':''} ${w.has(c.id)?'wanted':''}" data-id="${esc(c.id)}"><div class="imageWrap"><img loading="lazy" src="${esc(c.image)}" alt="${esc(c.number)}"><button class="want" aria-label="お気に入り">${w.has(c.id)?'★':'☆'}</button></div><div class="countControls"><button class="countMinus" aria-label="1枚減らす">−</button><strong class="cardCount">${n}</strong><button class="countPlus" aria-label="1枚増やす">＋</button></div><div class="meta"><span>${esc(c.number)}</span><span>${esc(c.rarity)}</span></div><div style="font-size:11px;font-weight:700;line-height:1.35;padding:0 2px 2px;min-height:30px;">${esc(c.name||'')}</div></article>`}).join('')}</div></section>`).join('');
+ document.querySelectorAll('#grid .card').forEach(e=>{e.onclick=()=>openCard(e.dataset.id);const c=p.cards.find(x=>x.id===e.dataset.id);e.querySelector('.countMinus').onclick=ev=>{ev.stopPropagation();setOwnedCount(c,p,getOwnedCount(c,p)-1);render()};e.querySelector('.countPlus').onclick=ev=>{ev.stopPropagation();setOwnedCount(c,p,getOwnedCount(c,p)+1);render()};e.querySelector('.want').onclick=ev=>{ev.stopPropagation();const ss=getSet('wanted',p.id);ss.has(e.dataset.id)?ss.delete(e.dataset.id):ss.add(e.dataset.id);putSet('wanted',p.id,ss);render()}});
+ let ownedCards=p.cards.filter(c=>getOwnedCount(c,p)>0).length,pct=p.cards.length?Math.round(ownedCards/p.cards.length*100):0;$('count').textContent=`${ownedCards} / ${p.cards.length}`;$('pct').textContent=pct+'%';
 }
 function openCard(id){let p=active();cur=p.cards.find(c=>c.id===id);$("modal").classList.remove("hidden");updateModal()}
 function updateModal(){let o=getSet("owned",active().id),w=getSet("wanted",active().id);$("big").src=cur.image;$("title").textContent=cur.number+(cur.name?"　"+cur.name:"");$("info").textContent=active().name+"　"+cur.rarity;$("owned").textContent=o.has(cur.id)?"✓ 所持":"☐ 未所持";$("wanted").textContent=w.has(cur.id)?"★ お気に入り":"☆ お気に入り"}
@@ -139,139 +144,17 @@ function currentFilteredCards(p){
  return p.cards.filter(c=>
    (!q||[c.number,c.name,c.rarity,c.search,c.keywords].flatMap(v=>Array.isArray(v)?v:[v]).filter(Boolean).join(" ").toLowerCase().includes(q))&&
    (!r||c.rarity===r)&&
-   (!st||(st==="yes"&&o.has(c.id))||(st==="no"&&!o.has(c.id))||(st==="want"&&w.has(c.id)))&&
+   (!st||(st==="yes"&&getOwnedCount(c,p)>0)||(st==="no"&&getOwnedCount(c,p)===0)||(st==="want"&&w.has(c.id)))&&
    (!favoriteOnly||w.has(c.id))
  );
 }
 function collectionCards(p,mode){
  const cards=currentFilteredCards(p),o=getSet("owned",p.id),w=getSet("wanted",p.id);
  if(mode==="wanted")return cards.filter(c=>w.has(c.id));
- if(mode==="unowned")return cards.filter(c=>!o.has(c.id));
- return cards.filter(c=>o.has(c.id));
+ if(mode==="unowned")return cards.filter(c=>getOwnedCount(c,p)===0);
+ return cards.filter(c=>getOwnedCount(c,p)>0);
 }
 
-function getTradeCount(c,p){
-  const key="ownedCount_"+p.id;
-  try{
-    const obj=JSON.parse(localStorage.getItem(key)||"{}")||{};
-    if(Object.prototype.hasOwnProperty.call(obj,c.id)) return Math.max(0,parseInt(obj[c.id],10)||0);
-  }catch(e){}
-  const importedCount=c.tradeCount??c.ownedCount??c.quantity??c.count;
-  if(importedCount!==undefined && importedCount!==null && importedCount!==""){
-    const n=parseInt(importedCount,10);
-    if(Number.isFinite(n)) return Math.max(0,n);
-  }
-  return 0;
-}
-function setTradeCount(c,p,n){
-  const key="ownedCount_"+p.id;
-  let obj={};
-  try{obj=JSON.parse(localStorage.getItem(key)||"{}")||{}}catch(e){}
-  obj[c.id]=Math.max(0,n);
-  localStorage.setItem(key,JSON.stringify(obj));
-  // 交換用モードの枚数は通常モードの所持情報とは別に管理する。
-}
-function tradeFilteredCards(p){
-  const q=$("q").value.trim().toLowerCase(),r=$("rarity").value;
-  return p.cards.filter(c=>
-    (!q||[c.number,c.name,c.rarity,c.search,c.keywords].flatMap(v=>Array.isArray(v)?v:[v]).filter(Boolean).join(" ").toLowerCase().includes(q))&&
-    (!r||c.rarity===r)
-  );
-}
-function tradeGroups(cards){
-  const groups=[],map=new Map();
-  cards.forEach(c=>{
-    const title=c.coordinate||c.coord||c.outfit||c.coodinate||c.coodinateName||c.outfitName||"";
-    const key=title||("__single__"+c.id);
-    if(!map.has(key)){const g={key,title,cards:[]};map.set(key,g);groups.push(g)}
-    map.get(key).cards.push(c);
-  });
-  return groups;
-}
-function openTradeMode(){
-  const p=active(); if(!p)return;
-  const cards=tradeFilteredCards(p);
-  const overlay=document.createElement("div");
-  overlay.id="tradeModeOverlay";
-  overlay.style.cssText="position:fixed;inset:0;background:#fff;z-index:9999;overflow:auto;padding:16px;box-sizing:border-box;";
-  overlay.innerHTML=`<div style="max-width:1200px;margin:auto;">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;">
-      <h2 style="margin:0;">交換用モード</h2><div style="display:flex;gap:7px;align-items:center;"><button id="tradeImageSave" class="compactBtn light">画像に保存</button><button id="tradeClose">閉じる</button></div>
-    </div>
-    <div style="font-size:14px;margin-bottom:10px;">カード下部の－＋で交換用の所持枚数を変更できます。</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px;">
-      <select id="tradeStatus" style="padding:9px;border:1px solid #ddd;border-radius:10px;background:#fff;font-size:15px;"><option value="">すべて</option><option value="yes">所持済</option><option value="no">未所持</option><option value="want">お気に入り</option></select>
-      <select id="tradeRarity" style="padding:9px;border:1px solid #ddd;border-radius:10px;background:#fff;font-size:15px;"><option value="">全レアリティ</option></select>
-    </div>
-    <input id="tradeQ" placeholder="カード番号・カード名を検索" style="margin-bottom:10px;">
-    <div id="tradeRows"></div>
-  </div>`;
-  document.body.appendChild(overlay);
-  const rows=overlay.querySelector("#tradeRows");
-  const tradeRarity=overlay.querySelector("#tradeRarity");
-  const rar=[...new Set(p.cards.map(c=>c.rarity).filter(Boolean))];
-  tradeRarity.innerHTML='<option value="">全レアリティ</option>'+rar.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');
-  const renderTradeRows=()=>{
-    const q=overlay.querySelector("#tradeQ").value.trim().toLowerCase();
-    const st=overlay.querySelector("#tradeStatus").value;
-    const rr=tradeRarity.value;
-    const filtered=p.cards.filter(c=>
-      (!q||[c.number,c.name,c.rarity,c.search,c.keywords].flatMap(v=>Array.isArray(v)?v:[v]).filter(Boolean).join(' ').toLowerCase().includes(q))&&
-      (!rr||c.rarity===rr)&&
-      (!st||(st==='yes'&&getTradeCount(c,p)>0)||(st==='no'&&getTradeCount(c,p)===0)||(st==='want'&&getSet('wanted',p.id).has(c.id)))
-    );
-    rows.innerHTML='';
-    const groups=tradeGroups(filtered);
-    if(!groups.length){rows.innerHTML='<div class="msg">該当するカードがありません</div>';return}
-    groups.forEach(g=>renderTradeGroup(g));
-  };
-  const renderTradeGroup=(g)=>{
-  if(!groups.length){rows.innerHTML='<div class="msg">該当するカードがありません</div>'}
-    const row=document.createElement("div");
-    row.style.cssText="margin-bottom:20px;";
-    if(g.title){
-      const title=document.createElement("div");
-      title.textContent=g.title;
-      title.style.cssText="font-weight:700;font-size:15px;margin:0 0 7px;";
-      row.appendChild(title);
-    }
-    const grid=document.createElement("div");
-    grid.style.cssText="display:flex;flex-wrap:nowrap;gap:9px;overflow-x:auto;overflow-y:hidden;padding-bottom:5px;align-items:flex-start;";
-    g.cards.forEach(c=>{
-      const count=getTradeCount(c,p);
-      const card=document.createElement("div");
-      card.className="card";
-      card.style.cssText="position:relative;overflow:hidden;flex:0 0 118px;width:118px;";
-      card.innerHTML=`
-        <img src="${esc(c.image)}" alt="${esc(c.number||"")}" style="width:100%;display:block;">
-        <div style="font-size:11px;font-weight:700;line-height:1.35;padding:5px 2px 4px;min-height:30px;">${esc(c.name||"")}</div>
-        <div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:3px 2px 4px;border-top:1px solid #eee;">
-          <button class="tradeMinus compactBtn" aria-label="1枚減らす" style="width:26px;height:26px;font-size:17px;line-height:1;padding:0;">−</button>
-          <strong class="tradeCount" style="min-width:18px;text-align:center;font-size:14px;">${count}</strong>
-          <button class="tradePlus compactBtn" aria-label="1枚増やす" style="width:26px;height:26px;font-size:17px;line-height:1;padding:0;">＋</button>
-        </div>`;
-      const countEl=card.querySelector(".tradeCount");
-      card.querySelector(".tradeMinus").onclick=()=>{
-        const n=Math.max(0,getTradeCount(c,p)-1); setTradeCount(c,p,n); countEl.textContent=n;
-      };
-      card.querySelector(".tradePlus").onclick=()=>{
-        const n=getTradeCount(c,p)+1; setTradeCount(c,p,n); countEl.textContent=n;
-      };
-      grid.appendChild(card);
-    });
-    row.appendChild(grid);
-    rows.appendChild(row);
-  };
-  renderTradeRows();
-  overlay.querySelector("#tradeQ").oninput=renderTradeRows;
-  overlay.querySelector("#tradeStatus").onchange=renderTradeRows;
-  overlay.querySelector("#tradeRarity").onchange=renderTradeRows;
-  overlay.querySelector("#tradeImageSave").onclick=async()=>{
-  const b=overlay.querySelector("#tradeImageSave");b.disabled=true;b.textContent="作成中…";
-  await makeTradeImage(overlay);b.disabled=false;b.textContent="画像に保存";
-};
-  overlay.querySelector("#tradeClose").onclick=()=>overlay.remove();
-}
 async function loadCanvasImage(url){
   if(!url)return null;
   const sources=[
@@ -328,7 +211,7 @@ async function makeCollectionImage(mode=collectionMode){
  const cards=showUnselected?filtered:effectiveSelected,selectedIds=new Set(effectiveSelected.map(c=>c.id));
  if(!cards.length){alert((mode==='owned'?'所持':mode==='wanted'?'お気に入り':'未所持')+'カードがありません。');return}
  $('collectionModal').classList.remove('hidden');$('collectionInfo').textContent='画像を作成しています…';
- document.querySelectorAll('.collectionMode').forEach(b=>{if(b.dataset.mode!=='trade'){b.style.background=b.dataset.mode===mode?'#222':'#eee';b.style.color=b.dataset.mode===mode?'#fff':'#222'}});
+ document.querySelectorAll('.collectionMode').forEach(b=>{b.style.background=b.dataset.mode===mode?'#222':'#eee';b.style.color=b.dataset.mode===mode?'#fff':'#222'});
  const groups=groupByCoordinate?groupCardsByCoordinate(cards):[{title:'',cards}],layout=getCollectionLayout(cards,groups,groupByCoordinate),
        {cols,cellW,imgW,imgH,labelH,titleH,groupTitleH,rowGap,pad,gap}=layout,
        canvas=$('collectionCanvas');
@@ -342,7 +225,7 @@ async function makeCollectionImage(mode=collectionMode){
    for(let i=0;i<g.cards.length;i+=cols) chunks.push(g.cards.slice(i,i+cols));
    chunks.forEach((chunk,chunkIndex)=>{
      if(groupByCoordinate&&g.title&&chunkIndex===0){ctx.fillStyle='#222';ctx.font='bold 16px sans-serif';ctx.fillText(g.title,pad,yCursor+17);yCursor+=groupTitleH;}
-     chunk.forEach((c,i)=>{const x=pad+i*(cellW+gap)+9,y=yCursor+4,img=loadedMap.get(c.id);ctx.save();if(showUnselected&&!selectedIds.has(c.id))ctx.globalAlpha=.28;if(img){const ratio=Math.min(imgW/img.naturalWidth,imgH/img.naturalHeight),w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;ctx.drawImage(img,x+(imgW-w)/2,y+(imgH-h)/2,w,h)}else{ctx.fillStyle='#eee';ctx.fillRect(x,y,imgW,imgH);ctx.fillStyle='#777';ctx.font='14px sans-serif';ctx.fillText('画像なし',x+10,y+imgH/2)}ctx.globalAlpha=1;ctx.fillStyle='#222';ctx.font='bold 14px sans-serif';ctx.fillText(c.number||'',x,y+imgH+18);if(c.rarity){ctx.font='13px sans-serif';ctx.fillText(c.rarity,x+Math.max(70,imgW-32),y+imgH+18)}if(c.name){ctx.font='12px sans-serif';ctx.fillText(String(c.name).slice(0,16),x,y+imgH+38)}ctx.restore();});
+     chunk.forEach((c,i)=>{const x=pad+i*(cellW+gap)+9,y=yCursor+4,img=loadedMap.get(c.id);ctx.save();if(showUnselected&&!selectedIds.has(c.id))ctx.globalAlpha=.28;if(img){const ratio=Math.min(imgW/img.naturalWidth,imgH/img.naturalHeight),w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;ctx.drawImage(img,x+(imgW-w)/2,y+(imgH-h)/2,w,h)}else{ctx.fillStyle='#eee';ctx.fillRect(x,y,imgW,imgH);ctx.fillStyle='#777';ctx.font='14px sans-serif';ctx.fillText('画像なし',x+10,y+imgH/2)}ctx.globalAlpha=1;const count=getOwnedCount(c,p);ctx.fillStyle='rgba(255,255,255,.96)';ctx.beginPath();ctx.roundRect(x+imgW-54,y+10,48,42,10);ctx.fill();ctx.fillStyle='#222';ctx.font='bold 26px -apple-system,BlinkMacSystemFont,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(count),x+imgW-30,y+31);ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.fillStyle='#222';ctx.font='bold 14px sans-serif';ctx.fillText(c.number||'',x,y+imgH+18);if(c.rarity){ctx.font='13px sans-serif';ctx.fillText(c.rarity,x+Math.max(70,imgW-32),y+imgH+18)}if(c.name){ctx.font='12px sans-serif';ctx.fillText(String(c.name).slice(0,16),x,y+imgH+38)}ctx.restore();});
      yCursor+=imgH+labelH+rowGap;
    });
  }
@@ -366,55 +249,6 @@ async function saveCollectionImage(){
    alert("画像を保存できませんでした。カード枚数を減らすか、検索・レアリティで絞り込んでください。");
  }
 }
-async function makeTradeImage(overlay=null){
- const p=active();if(!p)return;
- let cards;
- if(overlay){
-   const q=overlay.querySelector("#tradeQ")?.value.trim().toLowerCase()||"";
-   const st=overlay.querySelector("#tradeStatus")?.value||"";
-   const rr=overlay.querySelector("#tradeRarity")?.value||"";
-   cards=p.cards.filter(c=>
-     (!q||[c.number,c.name,c.rarity,c.search,c.keywords].flatMap(v=>Array.isArray(v)?v:[v]).filter(Boolean).join(' ').toLowerCase().includes(q))&&
-     (!rr||c.rarity===rr)&&
-     (!st||(st==='yes'&&getTradeCount(c,p)>0)||(st==='no'&&getTradeCount(c,p)===0)||(st==='want'&&getSet('wanted',p.id).has(c.id)))
-   );
- }else cards=tradeFilteredCards(p);
- if(!cards.length){alert("該当するカードがありません。");return}
- const groups=tradeGroups(cards),baseGroups=groups,layout=getCollectionLayout(cards,groups,true);
- const {cols,cellW,imgW,imgH,labelH,titleH,groupTitleH,rowGap,pad,gap}=layout;
- const canvas=document.createElement('canvas');canvas.width=layout.width;canvas.height=layout.height;
- const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
- ctx.fillStyle='#222';ctx.font='bold 24px -apple-system,BlinkMacSystemFont,sans-serif';ctx.fillText(p.name,pad,30);
- ctx.font='16px -apple-system,BlinkMacSystemFont,sans-serif';
- const total=cards.reduce((n,c)=>n+getTradeCount(c,p),0);ctx.fillText(`交換用 ${cards.length}枚・合計${total}枚`,pad,56);
- const loaded=await Promise.all(cards.map(async c=>({c,img:await loadCanvasImage(c.image)}))),loadedMap=new Map(loaded.map(x=>[x.c.id,x.img]));
- let yCursor=titleH;
- for(const g of baseGroups){
-   const chunks=[];for(let i=0;i<g.cards.length;i+=cols)chunks.push(g.cards.slice(i,i+cols));
-   chunks.forEach((chunk,chunkIndex)=>{
-     if(g.title&&chunkIndex===0){ctx.fillStyle='#222';ctx.font='bold 16px sans-serif';ctx.fillText(g.title,pad,yCursor+17);yCursor+=groupTitleH;}
-     chunk.forEach((c,i)=>{
-       const x=pad+i*(cellW+gap)+9,y=yCursor+4,img=loadedMap.get(c.id),count=getTradeCount(c,p);
-       if(img){const ratio=Math.min(imgW/img.naturalWidth,imgH/img.naturalHeight),w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;ctx.drawImage(img,x+(imgW-w)/2,y+(imgH-h)/2,w,h)}else{ctx.fillStyle='#eee';ctx.fillRect(x,y,imgW,imgH);ctx.fillStyle='#777';ctx.font='14px sans-serif';ctx.fillText('画像なし',x+10,y+imgH/2)}
-       // 枚数をカード画像の上に大きく表示
-       const text=String(count);
-       ctx.font='bold 42px -apple-system,BlinkMacSystemFont,sans-serif';
-       const tw=ctx.measureText(text).width,bx=x+imgW-tw-24,by=y+12,bw=tw+22,bh=54;
-       ctx.fillStyle='rgba(255,255,255,.96)';ctx.beginPath();ctx.roundRect(bx,by,bw,bh,12);ctx.fill();
-       ctx.fillStyle='#222';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,bx+bw/2,by+bh/2);ctx.textAlign='left';ctx.textBaseline='alphabetic';
-       ctx.fillStyle='#222';ctx.font='bold 14px sans-serif';ctx.fillText(c.number||'',x,y+imgH+18);
-       if(c.rarity){ctx.font='13px sans-serif';ctx.fillText(c.rarity,x+Math.max(70,imgW-32),y+imgH+18)}
-       if(c.name){ctx.font='12px sans-serif';ctx.fillText(String(c.name).slice(0,16),x,y+imgH+38)}
-     });
-     yCursor+=imgH+labelH+rowGap;
-   });
- }
- try{
-   const blob=await canvasToBlob(canvas);downloadBlob(blob,"exchange.png");
- }catch(e){alert("画像を保存できませんでした。画像サイズが大きすぎる可能性があります。");}
-}
-document.querySelectorAll(".collectionMode").forEach(b=>b.onclick=()=>b.dataset.mode==="trade"?openTradeMode():makeCollectionImage(b.dataset.mode));
-$("collectionBtn").onclick=()=>{const st=$("status").value;makeCollectionImage(favoriteOnly?"wanted":st==="no"?"unowned":st==="yes"?"owned":collectionMode)};
 function syncFavoriteMode(){
   const b=$("favoriteModeBtn");
   b.style.background=favoriteOnly?"#222":"#eee";
@@ -429,7 +263,7 @@ $("menuImport").onclick=()=>{$("file").click();$("menuSheet").classList.add("hid
 $("file").onchange=e=>{if(e.target.files[0])importFile(e.target.files[0]);e.target.value=""};
 $("menuBtn").onclick=()=>{renderMenu();$("menuSheet").classList.remove("hidden")};$("menuClose").onclick=()=>$("menuSheet").classList.add("hidden");
 $("modalClose").onclick=()=>$("modal").classList.add("hidden");
-$("owned").onclick=()=>{let s=getSet("owned",active().id);s.has(cur.id)?s.delete(cur.id):s.add(cur.id);putSet("owned",active().id,s);render();updateModal()};
+$("owned").onclick=()=>{const p=active();setOwnedCount(cur,p,getOwnedCount(cur,p)>0?0:1);render();updateModal()};
 $("wanted").onclick=()=>{let s=getSet("wanted",active().id);s.has(cur.id)?s.delete(cur.id):s.add(cur.id);putSet("wanted",active().id,s);render();updateModal()};
 ["q","status","rarity"].forEach(id=>$(id).oninput=()=>{render()});
 syncFavoriteMode();

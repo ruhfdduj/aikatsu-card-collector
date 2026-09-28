@@ -1,4 +1,4 @@
-const APP_CACHE='cc-v5';
+const APP_CACHE='cc-v6';
 const IMAGE_CACHE='cc-images-v1';
 const APP_FILES=['./','./index.html','./manifest.json','./icon.svg'];
 

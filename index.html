@@ -12,7 +12,7 @@ button{font:inherit;border:0;border-radius:11px;padding:11px;background:#222;col
 select,input{width:100%;padding:11px;border:1px solid #ddd;border-radius:11px;background:#fff;font-size:16px}
 .stats{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin:12px 0 7px}.progress{height:8px;background:#eee;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;width:0;background:#222}
 .controls{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}.controls input{grid-column:1/-1}
-.grid{padding:12px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.card{background:#fff;border-radius:12px;padding:6px;position:relative;box-shadow:0 1px 7px #0001}.card img{width:100%;height:auto;aspect-ratio:auto;object-fit:contain;display:block;border-radius:8px;background:#eee}.want{position:absolute;left:10px;bottom:30px;border-radius:7px;width:30px;height:30px;padding:0;background:#fff;color:#222;box-shadow:0 2px 8px #0003;border:2px solid #aaa;z-index:2;font-size:18px;line-height:26px}.wanted .want{background:#fff;color:#d08a00;border-color:#d08a00}.meta{font-size:11px;display:flex;justify-content:space-between;padding:6px 2px 1px;font-weight:700}.card.owned{outline:2px solid #222}.check{position:absolute;right:10px;bottom:30px;border-radius:7px;width:30px;height:30px;padding:0;background:#fff;color:#222;box-shadow:0 2px 8px #0003;border:2px solid #aaa;z-index:2;font-size:18px;line-height:26px}.owned .check{background:#222;color:#fff;border-color:#222}
+.grid{padding:12px}.coordRow{margin-bottom:20px}.coordTitle{font-size:14px;font-weight:800;margin:0 0 7px 2px}.coordScroll{display:flex;gap:9px;overflow-x:auto;overflow-y:hidden;padding:2px 2px 7px}.coordScroll>.card{flex:0 0 118px;width:118px}.card{background:#fff;border-radius:12px;padding:6px;position:relative;box-shadow:0 1px 7px #0001}.card img{width:100%;height:auto;aspect-ratio:auto;object-fit:contain;display:block;border-radius:8px;background:#eee}.want{position:absolute;left:10px;bottom:30px;border-radius:7px;width:30px;height:30px;padding:0;background:#fff;color:#222;box-shadow:0 2px 8px #0003;border:2px solid #aaa;z-index:2;font-size:18px;line-height:26px}.wanted .want{background:#fff;color:#d08a00;border-color:#d08a00}.meta{font-size:11px;display:flex;justify-content:space-between;padding:6px 2px 1px;font-weight:700}.card.owned{outline:2px solid #222}.check{position:absolute;right:10px;bottom:30px;border-radius:7px;width:30px;height:30px;padding:0;background:#fff;color:#222;box-shadow:0 2px 8px #0003;border:2px solid #aaa;z-index:2;font-size:18px;line-height:26px}.owned .check{background:#222;color:#fff;border-color:#222}
 .sheet,.modal{position:fixed;inset:0;background:#0009;z-index:20;padding:18px;display:grid;place-items:center}.hidden{display:none}.panel{background:#fff;border-radius:18px;padding:15px;width:min(500px,100%);max-height:90vh;overflow:auto}.panel h2{margin:3px 0 8px;font-size:19px}.close{float:right;width:34px;height:34px;border-radius:50%;padding:0;background:#eee;color:#222;font-size:20px}.profileRow{display:flex;gap:8px;align-items:center;padding:12px 0;border-bottom:1px solid #eee}.profileRow .name{flex:1;font-weight:700}.small{font-size:12px;color:#777}.file{display:none}.msg{text-align:center;padding:30px 15px;color:#777}
 </style></head><body>
 <header>
@@ -42,6 +42,10 @@ select,input{width:100%;padding:11px;border:1px solid #ddd;border-radius:11px;ba
 <label style="display:inline-flex;align-items:center;gap:7px;margin:8px 0;font-size:14px;white-space:nowrap;writing-mode:horizontal-tb;">
   <input type="checkbox" id="collectionShowUnselected" style="flex:0 0 auto;">
   <span style="white-space:nowrap;">選択していないカードも半透明で表示</span>
+</label>
+<label style="display:inline-flex;align-items:center;gap:7px;margin:4px 0 8px;font-size:14px;white-space:nowrap;writing-mode:horizontal-tb;">
+  <input type="checkbox" id="collectionGroupByCoordinate" style="flex:0 0 auto;">
+  <span style="white-space:nowrap;">コーデごとに改行</span>
 </label>
 <div style="background:#f7f5f8;border-radius:12px;padding:8px;overflow:auto"><canvas id="collectionCanvas" style="display:block;width:100%;height:auto;background:#fff;border-radius:8px"></canvas></div>
 <button id="collectionSave" style="width:100%;margin-top:10px">画像に保存</button>
@@ -97,20 +101,31 @@ async function importFile(file){
  if(owned.size)putSet("owned",p.id,owned); else localStorage.removeItem(stateKey("owned",p.id));
  if(wanted.size)putSet("wanted",p.id,wanted); else localStorage.removeItem(stateKey("wanted",p.id));save();localStorage.setItem("cardcollector-active",activeId);renderProfiles();render();alert("「"+p.name+"」を追加しました！")}catch(e){alert("プロファイルを読み込めませんでした。JSON形式を確認してください。")}
 }
-function render(){
- let p=active();if(!p){$("grid").innerHTML='<div class="msg" style="grid-column:1/-1">まず「＋ インポート」からプロファイルを追加してください。</div>';$("count").textContent="0 / 0";$("pct").textContent="0%";return}
- let o=getSet("owned",p.id),w=getSet("wanted",p.id),q=$("q").value.trim().toLowerCase(),st=$("status").value,r=$("rarity").value;
- let rar=[...new Set(p.cards.map(c=>c.rarity).filter(Boolean))];$("rarity").innerHTML='<option value="">全レアリティ</option>'+rar.map(x=>`<option>${esc(x)}</option>`).join("");$("rarity").value=r;
- let list=p.cards.filter(c=>(!q||[c.number,c.name,c.rarity,c.search,c.keywords].flatMap(v=>Array.isArray(v)?v:[v]).filter(Boolean).join(" ").toLowerCase().includes(q))&&(!r||c.rarity===r)&&(!st||(st==="yes"&&o.has(c.id))||(st==="no"&&!o.has(c.id))||(st==="want"&&w.has(c.id))));
- $("grid").innerHTML=list.map(c=>`<article class="card ${o.has(c.id)?"owned":""} ${w.has(c.id)?"wanted":""}" data-id="${esc(c.id)}"><button class="want" aria-label="欲しい">${w.has(c.id)?"★":"☆"}</button><button class="check" aria-label="所持">${o.has(c.id)?"✓":"○"}</button><img loading="lazy" src="${esc(c.image)}" alt="${esc(c.number)}"><div class="meta"><span>${esc(c.number)}</span><span>${esc(c.rarity)}</span></div></article>`).join("");
- document.querySelectorAll(".card").forEach(e=>{
-   e.onclick=()=>openCard(e.dataset.id);
-   const btn=e.querySelector(".check");
-   btn.onclick=(ev)=>{ev.stopPropagation();const s=getSet("owned",active().id);s.has(e.dataset.id)?s.delete(e.dataset.id):s.add(e.dataset.id);putSet("owned",active().id,s);render()};
-   const want=e.querySelector(".want");
-   want.onclick=(ev)=>{ev.stopPropagation();const s=getSet("wanted",active().id);s.has(e.dataset.id)?s.delete(e.dataset.id):s.add(e.dataset.id);putSet("wanted",active().id,s);render()};
+function groupCardsByCoordinate(cards){
+ const groups=[],map=new Map();
+ cards.forEach(c=>{
+   const coord=c.coordinate||c.coord||c.outfit||c.coodinate||c.coodinateName||c.outfitName;
+   const key=coord||('__single__'+c.id);
+   if(!map.has(key)){const g={key,title:coord||'',cards:[]};map.set(key,g);groups.push(g)}
+   map.get(key).cards.push(c);
  });
- let pct=p.cards.length?Math.round(o.size/p.cards.length*100):0;$("count").textContent=`${o.size} / ${p.cards.length}`;$("pct").textContent=pct+"%";
+ return groups;
+}
+function render(){
+ let p=active();if(!p){$('grid').innerHTML='<div class="msg">まず「＋ インポート」からプロファイルを追加してください。</div>';$('count').textContent='0 / 0';$('pct').textContent='0%';return}
+ let o=getSet('owned',p.id),w=getSet('wanted',p.id),q=$('q').value.trim().toLowerCase(),st=$('status').value,r=$('rarity').value;
+ let rar=[...new Set(p.cards.map(c=>c.rarity).filter(Boolean))];$('rarity').innerHTML='<option value="">全レアリティ</option>'+rar.map(x=>`<option>${esc(x)}</option>`).join('');$('rarity').value=r;
+ let list=p.cards.filter(c=>(!q||[c.number,c.name,c.rarity,c.search,c.keywords].flatMap(v=>Array.isArray(v)?v:[v]).filter(Boolean).join(' ').toLowerCase().includes(q))&&(!r||c.rarity===r)&&(!st||(st==='yes'&&o.has(c.id))||(st==='no'&&!o.has(c.id))||(st==='want'&&w.has(c.id))));
+ const groups=groupCardsByCoordinate(list);
+ $('grid').innerHTML=groups.map(g=>`<section class="coordRow">${g.title?`<div class="coordTitle">${esc(g.title)}</div>`:''}<div class="coordScroll">${g.cards.map(c=>`<article class="card ${o.has(c.id)?'owned':''} ${w.has(c.id)?'wanted':''}" data-id="${esc(c.id)}"><button class="want" aria-label="欲しい">${w.has(c.id)?'★':'☆'}</button><button class="check" aria-label="所持">${o.has(c.id)?'✓':'○'}</button><img loading="lazy" src="${esc(c.image)}" alt="${esc(c.number)}"><div class="meta"><span>${esc(c.number)}</span><span>${esc(c.rarity)}</span></div><div style="font-size:11px;font-weight:700;line-height:1.35;padding:0 2px 2px;min-height:30px;">${esc(c.name||'')}</div></article>`).join('')}</div></section>`).join('');
+ document.querySelectorAll('#grid .card').forEach(e=>{
+   e.onclick=()=>openCard(e.dataset.id);
+   const btn=e.querySelector('.check');
+   btn.onclick=(ev)=>{ev.stopPropagation();const s=getSet('owned',active().id);s.has(e.dataset.id)?s.delete(e.dataset.id):s.add(e.dataset.id);putSet('owned',active().id,s);render()};
+   const want=e.querySelector('.want');
+   want.onclick=(ev)=>{ev.stopPropagation();const s=getSet('wanted',active().id);s.has(e.dataset.id)?s.delete(e.dataset.id):s.add(e.dataset.id);putSet('wanted',active().id,s);render()};
+ });
+ let pct=p.cards.length?Math.round(o.size/p.cards.length*100):0;$('count').textContent=`${o.size} / ${p.cards.length}`;$('pct').textContent=pct+'%';
 }
 function openCard(id){let p=active();cur=p.cards.find(c=>c.id===id);$("modal").classList.remove("hidden");updateModal()}
 function updateModal(){let o=getSet("owned",active().id),w=getSet("wanted",active().id);$("big").src=cur.image;$("title").textContent=cur.number+(cur.name?"　"+cur.name:"");$("info").textContent=active().name+"　"+cur.rarity;$("owned").textContent=o.has(cur.id)?"✓ 所持":"☐ 未所持";$("wanted").textContent=w.has(cur.id)?"★ 欲しい":"☆ 欲しい"}
@@ -188,18 +203,14 @@ function openTradeMode(){
       const count=getTradeCount(c,p);
       const card=document.createElement("div");
       card.className="card";
-      card.style.cssText="position:relative;overflow:hidden;flex:0 0 150px;width:150px;";
+      card.style.cssText="position:relative;overflow:hidden;flex:0 0 118px;width:118px;";
       card.innerHTML=`
         <img src="${c.image}" alt="${c.number||""}" style="width:100%;display:block;">
-        <div class="card-info">
-          <div class="card-number">${c.number||""}</div>
-          <div class="card-name">${c.name||""}</div>
-          <div class="card-rarity">${c.rarity||""}</div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:center;gap:14px;padding:7px 8px 9px;border-top:1px solid #eee;">
-          <button class="tradeMinus" style="width:32px;height:32px;font-size:22px;line-height:1;">−</button>
-          <strong class="tradeCount" style="min-width:24px;text-align:center;font-size:17px;">${count}</strong>
-          <button class="tradePlus" style="width:32px;height:32px;font-size:22px;line-height:1;">＋</button>
+        <div style="font-size:11px;font-weight:700;line-height:1.35;padding:5px 2px 4px;min-height:30px;">${c.name||""}</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 4px 5px;border-top:1px solid #eee;">
+          <button class="tradeMinus" style="width:28px;height:28px;font-size:20px;line-height:1;padding:0;">−</button>
+          <strong class="tradeCount" style="min-width:20px;text-align:center;font-size:16px;">${count}</strong>
+          <button class="tradePlus" style="width:28px;height:28px;font-size:20px;line-height:1;padding:0;">＋</button>
         </div>`;
       const countEl=card.querySelector(".tradeCount");
       card.querySelector(".tradeMinus").onclick=()=>{
@@ -217,65 +228,59 @@ function openTradeMode(){
 }
 async function makeCollectionImage(mode=collectionMode){
  collectionMode=mode;
- let p=active();if(!p){alert("プロファイルがありません。");return}
+ let p=active();if(!p){alert('プロファイルがありません。');return}
  const filtered=currentFilteredCards(p);
  const selected=collectionCards(p,mode);
- const noSelection = selected.length===0 && !($("status").value);
- const effectiveSelected = noSelection ? filtered : selected;
- const showUnselected=$("collectionShowUnselected").checked;
+ const noSelection=selected.length===0&&!$('status').value;
+ const effectiveSelected=noSelection?filtered:selected;
+ const showUnselected=$('collectionShowUnselected').checked;
+ const groupByCoordinate=$('collectionGroupByCoordinate').checked;
  const cards=showUnselected?filtered:effectiveSelected;
  const selectedIds=new Set(effectiveSelected.map(c=>c.id));
- if(!cards.length){alert((mode==="owned"?"所持":mode==="wanted"?"欲しい":"未所持")+"カードがありません。");return}
- $("collectionModal").classList.remove("hidden");
- $("collectionInfo").textContent=`${cards.length}枚を画像にまとめています…`;
- document.querySelectorAll(".collectionMode").forEach(b=>{b.style.background=b.dataset.mode===mode?"#222":"#eee";b.style.color=b.dataset.mode===mode?"#fff":"#222"});
- const n=cards.length;
- const cols=n<=12?3:n<=30?4:n<=60?5:6;
+ if(!cards.length){alert((mode==='owned'?'所持':mode==='wanted'?'欲しい':'未所持')+'カードがありません。');return}
+ $('collectionModal').classList.remove('hidden');
+ $('collectionInfo').textContent=`${cards.length}枚を画像にまとめています…`;
+ document.querySelectorAll('.collectionMode').forEach(b=>{b.style.background=b.dataset.mode===mode?'#222':'#eee';b.style.color=b.dataset.mode===mode?'#fff':'#222'});
+ const groups=groupByCoordinate?groupCardsByCoordinate(cards):[{title:'',cards}];
+ const maxCols=groupByCoordinate?Math.max(...groups.map(g=>g.cards.length)):cards.length;
+ const cols=groupByCoordinate?Math.min(maxCols,8):(cards.length<=12?3:cards.length<=30?4:cards.length<=60?5:6);
  const maxCanvasW=1800,pad=30,gap=18;
- const cellW=Math.floor((maxCanvasW-pad*2-gap*(cols-1))/cols);
- const imgW=Math.max(150,cellW-28);
+ const cellW=Math.max(170,Math.floor((maxCanvasW-pad*2-gap*(cols-1))/cols));
+ const imgW=Math.max(140,cellW-28);
  const imgH=Math.round(imgW*1.375);
- const labelH=58,titleH=105,rows=Math.ceil(n/cols),canvas=$("collectionCanvas");
+ const labelH=58,titleH=105,groupTitleH=groupByCoordinate?30:0;
+ const canvas=$('collectionCanvas');
+ const rowCount=groups.length;
+ const rowHeight=groupByCoordinate?groupTitleH+imgH+labelH+16:imgH+labelH;
  canvas.width=cols*cellW+pad*2+gap*(cols-1);
- canvas.height=titleH+rows*(imgH+labelH)+pad;
- const ctx=canvas.getContext("2d");
- ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);
- ctx.fillStyle="#222";
- ctx.font=`bold ${n>60?26:30}px -apple-system,BlinkMacSystemFont,sans-serif`;
- ctx.fillText(p.name,pad,48);
- ctx.font=`${n>60?18:21}px -apple-system,BlinkMacSystemFont,sans-serif`;
- ctx.fillText(`${noSelection?"全表示":(mode==="owned"?"所持":mode==="wanted"?"欲しい":"未所持")} ${effectiveSelected.length}枚${showUnselected?"（未選択カードは半透明）":""}`,pad,80);
-
- const loaded=await Promise.all(cards.map(async c=>{
-   try{
-     const img=new Image();img.crossOrigin="anonymous";img.src=proxyImageUrl(c.image);
-     await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;setTimeout(()=>rej(new Error("timeout")),10000)});
-     return {c,img};
-   }catch(e){return {c,img:null}}
- }));
-
- for(let i=0;i<loaded.length;i++){
-   const {c,img}=loaded[i],
-         x=pad+(i%cols)*(cellW+gap)+14,
-         y=titleH+Math.floor(i/cols)*(imgH+labelH)+10;
-   ctx.save();
-   if(showUnselected&&!selectedIds.has(c.id))ctx.globalAlpha=0.28;
-   if(img){
-     const ratio=Math.min(imgW/img.naturalWidth,imgH/img.naturalHeight),
-           w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;
-     ctx.drawImage(img,x+(imgW-w)/2,y+(imgH-h)/2,w,h);
-   }else{
-     ctx.fillStyle="#eee";ctx.fillRect(x,y,imgW,imgH);
-     ctx.fillStyle="#777";ctx.font="20px sans-serif";ctx.fillText("画像を取得できません",x+35,y+220);
-   }
-   ctx.fillStyle="#222";ctx.font=`bold ${n>60?17:20}px sans-serif`;
-   ctx.fillText(c.number||"",x,y+imgH+25);
-   ctx.font=`${n>60?15:18}px sans-serif`;
-   ctx.fillText(c.rarity||"",x+Math.max(90,imgW-55),y+imgH+25);
-   if(c.name){ctx.font=`${n>60?13:16}px sans-serif`;ctx.fillText(String(c.name).slice(0,18),x,y+imgH+48)}
-   ctx.restore();
+ canvas.height=titleH+rowCount*rowHeight+pad;
+ const ctx=canvas.getContext('2d');
+ ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+ ctx.fillStyle='#222';
+ ctx.font=`bold ${cards.length>60?26:30}px -apple-system,BlinkMacSystemFont,sans-serif`;ctx.fillText(p.name,pad,48);
+ ctx.font=`${cards.length>60?18:21}px -apple-system,BlinkMacSystemFont,sans-serif`;ctx.fillText(`${noSelection?'全表示':(mode==='owned'?'所持':mode==='wanted'?'欲しい':'未所持')} ${effectiveSelected.length}枚${showUnselected?'（未選択カードは半透明）':''}`,pad,80);
+ const loaded=await Promise.all(cards.map(async c=>{try{const img=new Image();img.crossOrigin='anonymous';img.src=proxyImageUrl(c.image);await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;setTimeout(()=>rej(new Error('timeout')),10000)});return {c,img}}catch(e){return {c,img:null}}}));
+ const loadedMap=new Map(loaded.map(x=>[x.c.id,x.img]));
+ let rowIndex=0;
+ for(const g of groups){
+   const groupY=titleH+rowIndex*rowHeight;
+   if(groupByCoordinate&&g.title){ctx.fillStyle='#222';ctx.font='bold 18px sans-serif';ctx.fillText(g.title,pad,groupY+20)}
+   g.cards.forEach((c,i)=>{
+     const x=pad+i*(cellW+gap)+14;
+     const y=groupY+(groupByCoordinate?groupTitleH:0)+10;
+     const img=loadedMap.get(c.id);
+     ctx.save();
+     if(showUnselected&&!selectedIds.has(c.id))ctx.globalAlpha=.28;
+     if(img){const ratio=Math.min(imgW/img.naturalWidth,imgH/img.naturalHeight),w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;ctx.drawImage(img,x+(imgW-w)/2,y+(imgH-h)/2,w,h)}
+     else{ctx.fillStyle='#eee';ctx.fillRect(x,y,imgW,imgH);ctx.fillStyle='#777';ctx.font='20px sans-serif';ctx.fillText('画像を取得できません',x+10,y+Math.min(imgH/2,220))}
+     ctx.fillStyle='#222';ctx.font=`bold ${cards.length>60?17:20}px sans-serif`;ctx.fillText(c.number||'',x,y+imgH+25);
+     ctx.font=`${cards.length>60?15:18}px sans-serif`;ctx.fillText(c.rarity||'',x+Math.max(90,imgW-55),y+imgH+25);
+     if(c.name){ctx.font=`${cards.length>60?13:16}px sans-serif`;ctx.fillText(String(c.name).slice(0,18),x,y+imgH+48)}
+     ctx.restore();
+   });
+   rowIndex++;
  }
- $("collectionInfo").textContent=`${cards.length}枚をまとめました。現在の絞り込みを反映しています。`;
+ $('collectionInfo').textContent=`${cards.length}枚をまとめました。現在の絞り込みを反映しています。`;
 }
 function saveCollectionImage(){
  const canvas=$("collectionCanvas");

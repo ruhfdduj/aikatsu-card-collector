@@ -22,7 +22,7 @@ select,input{width:100%;padding:11px;border:1px solid #ddd;border-radius:11px;ba
 </div>
 <div class="tools">
 <div class="controls"><select id="status"><option value="">すべて</option><option value="yes">所持済</option><option value="no">未所持</option></select><select id="rarity"><option value="">全レアリティ</option></select></div>
-<div class="top"><button id="favoriteModeBtn" class="compactBtn">お気に入り</button><button class="collectionMode compactBtn" data-mode="trade">交換用モード</button><button id="collectionBtn" class="collectionBtn compactBtn">画像に保存</button></div>
+<div class="top"><button id="favoriteModeBtn" class="compactBtn">☆ お気に入り</button><button class="collectionMode compactBtn" data-mode="trade">交換用モード</button><button id="collectionBtn" class="collectionBtn compactBtn">画像に保存</button></div>
 </div>
 </header>
 <main class="grid" id="grid"></main>
@@ -132,13 +132,15 @@ function openCard(id){let p=active();cur=p.cards.find(c=>c.id===id);$("modal").c
 function updateModal(){let o=getSet("owned",active().id),w=getSet("wanted",active().id);$("big").src=cur.image;$("title").textContent=cur.number+(cur.name?"　"+cur.name:"");$("info").textContent=active().name+"　"+cur.rarity;$("owned").textContent=o.has(cur.id)?"✓ 所持":"☐ 未所持";$("wanted").textContent=w.has(cur.id)?"★ お気に入り":"☆ お気に入り"}
 function proxyImageUrl(url){return "https://wsrv.nl/?url="+encodeURIComponent(url)+"&output=png"}
 let collectionMode="owned";
+let favoriteOnly=false;
 function currentFilteredCards(p){
  let o=getSet("owned",p.id),w=getSet("wanted",p.id),
      q=$("q").value.trim().toLowerCase(),st=$("status").value,r=$("rarity").value;
  return p.cards.filter(c=>
    (!q||[c.number,c.name,c.rarity,c.search,c.keywords].flatMap(v=>Array.isArray(v)?v:[v]).filter(Boolean).join(" ").toLowerCase().includes(q))&&
    (!r||c.rarity===r)&&
-   (!st||(st==="yes"&&o.has(c.id))||(st==="no"&&!o.has(c.id))||(st==="want"&&w.has(c.id)))
+   (!st||(st==="yes"&&o.has(c.id))||(st==="no"&&!o.has(c.id))||(st==="want"&&w.has(c.id)))&&
+   (!favoriteOnly||w.has(c.id))
  );
 }
 function collectionCards(p,mode){
@@ -167,9 +169,7 @@ function setTradeCount(c,p,n){
   try{obj=JSON.parse(localStorage.getItem(key)||"{}")||{}}catch(e){}
   obj[c.id]=Math.max(0,n);
   localStorage.setItem(key,JSON.stringify(obj));
-  const owned=getSet("owned",p.id);
-  if(n>0) owned.add(c.id); else owned.delete(c.id);
-  putSet("owned",p.id,owned);
+  // 交換用モードの枚数は通常モードの所持情報とは別に管理する。
 }
 function tradeFilteredCards(p){
   const q=$("q").value.trim().toLowerCase(),r=$("rarity").value;
@@ -249,19 +249,31 @@ function openTradeMode(){
 }
 async function loadCanvasImage(url){
   if(!url)return null;
-  const sources=[proxyImageUrl(url),url];
+  const sources=[
+    proxyImageUrl(url),
+    "https://images.weserv.nl/?url="+encodeURIComponent(url)+"&output=png",
+    url
+  ];
   for(const src of sources){
     try{
       const img=new Image();
       img.crossOrigin='anonymous';
       img.decoding='async';
-      img.src=src;
-      await new Promise((res,rej)=>{
-        const timer=setTimeout(()=>rej(new Error('timeout')),12000);
+      const loaded=new Promise((res,rej)=>{
+        const timer=setTimeout(()=>rej(new Error('timeout')),10000);
         img.onload=()=>{clearTimeout(timer);res()};
         img.onerror=()=>{clearTimeout(timer);rej(new Error('load failed'))};
       });
-      if(img.naturalWidth&&img.naturalHeight)return img;
+      img.src=src;
+      await loaded;
+      if(!img.naturalWidth||!img.naturalHeight)continue;
+      // CORS不可の画像はCanvasに描くと保存時に失敗するため、ここで確認して次の経路へ。
+      const test=document.createElement('canvas');
+      test.width=1;test.height=1;
+      const tctx=test.getContext('2d');
+      tctx.drawImage(img,0,0,1,1);
+      tctx.getImageData(0,0,1,1);
+      return img;
     }catch(e){}
   }
   return null;
@@ -367,9 +379,14 @@ async function makeTradeImage(){
  }catch(e){alert("画像を保存できませんでした。画像サイズが大きすぎる可能性があります。");}
 }
 document.querySelectorAll(".collectionMode").forEach(b=>b.onclick=()=>b.dataset.mode==="trade"?openTradeMode():makeCollectionImage(b.dataset.mode));
-$("collectionBtn").onclick=()=>{const st=$("status").value;makeCollectionImage(st==="no"?"unowned":st==="yes"?"owned":st==="want"?"wanted":collectionMode)};
-function syncFavoriteMode(){const on=$("status").value==="want";$("favoriteModeBtn").style.background=on?"#222":"#eee";$("favoriteModeBtn").style.color=on?"#fff":"#222"}
-$("favoriteModeBtn").onclick=()=>{$("status").value=$("status").value==="want"?"":"want";syncFavoriteMode();render()};
+$("collectionBtn").onclick=()=>{const st=$("status").value;makeCollectionImage(favoriteOnly?"wanted":st==="no"?"unowned":st==="yes"?"owned":collectionMode)};
+function syncFavoriteMode(){
+  const b=$("favoriteModeBtn");
+  b.style.background=favoriteOnly?"#222":"#eee";
+  b.style.color=favoriteOnly?"#fff":"#222";
+  b.textContent=favoriteOnly?"★ お気に入り":"☆ お気に入り";
+}
+$("favoriteModeBtn").onclick=()=>{favoriteOnly=!favoriteOnly;syncFavoriteMode();render()};
 $("collectionShowUnselected").onchange=()=>{if(!$("collectionModal").classList.contains("hidden"))makeCollectionImage(collectionMode)};
 $("collectionGroupByCoordinate").onchange=()=>{if(!$("collectionModal").classList.contains("hidden"))makeCollectionImage(collectionMode)};
 $("collectionSave").onclick=saveCollectionImage;$('collectionClose').onclick=()=>$("collectionModal").classList.add("hidden");
@@ -379,7 +396,7 @@ $("menuBtn").onclick=()=>{renderMenu();$("menuSheet").classList.remove("hidden")
 $("modalClose").onclick=()=>$("modal").classList.add("hidden");
 $("owned").onclick=()=>{let s=getSet("owned",active().id);s.has(cur.id)?s.delete(cur.id):s.add(cur.id);putSet("owned",active().id,s);render();updateModal()};
 $("wanted").onclick=()=>{let s=getSet("wanted",active().id);s.has(cur.id)?s.delete(cur.id):s.add(cur.id);putSet("wanted",active().id,s);render();updateModal()};
-["q","status","rarity"].forEach(id=>$(id).oninput=()=>{if(id==="status")syncFavoriteMode();render()});
+["q","status","rarity"].forEach(id=>$(id).oninput=()=>{render()});
 syncFavoriteMode();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 if(!profiles.length)importFileFetch();renderProfiles();render();

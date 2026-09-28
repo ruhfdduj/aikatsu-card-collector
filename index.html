@@ -180,7 +180,7 @@ function openTradeMode(){
   overlay.style.cssText="position:fixed;inset:0;background:#fff;z-index:9999;overflow:auto;padding:16px;box-sizing:border-box;";
   overlay.innerHTML=`<div style="max-width:1200px;margin:auto;">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;">
-      <h2 style="margin:0;">交換用モード</h2><button id="tradeClose">閉じる</button>
+      <h2 style="margin:0;">交換用モード</h2><div style="display:flex;gap:7px;align-items:center;"><button id="tradeImageSave" class="compactBtn light">画像に保存</button><button id="tradeClose">閉じる</button></div>
     </div>
     <div style="font-size:14px;margin-bottom:14px;">インポートしたカードを通常と同じカード表示で並べ、カード下部の－＋で所持枚数を変更できます。</div>
     <div id="tradeRows"></div>
@@ -235,6 +235,7 @@ function openTradeMode(){
     row.appendChild(grid);
     rows.appendChild(row);
   });
+  overlay.querySelector("#tradeImageSave").onclick=()=>{overlay.remove();makeCollectionImage('owned')};
   overlay.querySelector("#tradeClose").onclick=()=>overlay.remove();
 }
 async function loadCanvasImage(url){
@@ -254,9 +255,10 @@ async function makeCollectionImage(mode=collectionMode){
  if(!cards.length){alert((mode==='owned'?'所持':mode==='wanted'?'欲しい':'未所持')+'カードがありません。');return}
  $('collectionModal').classList.remove('hidden');$('collectionInfo').textContent='画像を作成しています…';
  document.querySelectorAll('.collectionMode').forEach(b=>{if(b.dataset.mode!=='trade'){b.style.background=b.dataset.mode===mode?'#222':'#eee';b.style.color=b.dataset.mode===mode?'#fff':'#222'}});
- const groups=groupByCoordinate?groupCardsByCoordinate(cards):[{title:'',cards}],maxCols=groupByCoordinate?Math.max(...groups.map(g=>g.cards.length),1):Math.max(cards.length,1);
- const cols=groupByCoordinate?Math.min(maxCols,7):(cards.length<=12?3:cards.length<=30?4:cards.length<=60?5:6),maxCanvasW=1400,pad=24,gap=12;
- const cellW=Math.max(120,Math.floor((maxCanvasW-pad*2-gap*(cols-1))/cols)),imgW=Math.max(95,cellW-18),imgH=Math.round(imgW*1.375),labelH=52,titleH=78,groupTitleH=28,rowGap=12;
+ const groups=groupByCoordinate?groupCardsByCoordinate(cards):[{title:'',cards}],
+       cols=(cards.length<=12?3:cards.length<=30?4:cards.length<=60?5:6),
+       maxCanvasW=1400,pad=24,gap=12;
+ const cellW=Math.max(120,Math.floor((maxCanvasW-pad*2-gap*(cols-1))/cols)),imgW=Math.max(95,cellW-18),imgH=Math.round(imgW*1.375),labelH=46,titleH=70,groupTitleH=24,rowGap=4;
  const rowHeights=groups.map(g=>(groupByCoordinate?groupTitleH:0)+imgH+labelH+rowGap),canvas=$('collectionCanvas');
  canvas.width=cols*cellW+pad*2+gap*(cols-1);canvas.height=titleH+rowHeights.reduce((a,b)=>a+b,0)+pad;
  const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -264,9 +266,13 @@ async function makeCollectionImage(mode=collectionMode){
  const loaded=await Promise.all(cards.map(async c=>({c,img:await loadCanvasImage(c.image)}))),loadedMap=new Map(loaded.map(x=>[x.c.id,x.img]));
  let yCursor=titleH;
  for(const g of groups){
-   if(groupByCoordinate&&g.title){ctx.fillStyle='#222';ctx.font='bold 16px sans-serif';ctx.fillText(g.title,pad,yCursor+18);yCursor+=groupTitleH;}
-   g.cards.forEach((c,i)=>{const x=pad+i*(cellW+gap)+9,y=yCursor+4,img=loadedMap.get(c.id);ctx.save();if(showUnselected&&!selectedIds.has(c.id))ctx.globalAlpha=.28;if(img){const ratio=Math.min(imgW/img.naturalWidth,imgH/img.naturalHeight),w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;ctx.drawImage(img,x+(imgW-w)/2,y+(imgH-h)/2,w,h)}else{ctx.fillStyle='#eee';ctx.fillRect(x,y,imgW,imgH);ctx.fillStyle='#777';ctx.font='14px sans-serif';ctx.fillText('画像なし',x+10,y+imgH/2)}ctx.fillStyle='#222';ctx.font='bold 14px sans-serif';ctx.fillText(c.number||'',x,y+imgH+18);if(c.rarity){ctx.font='13px sans-serif';ctx.fillText(c.rarity,x+Math.max(70,imgW-32),y+imgH+18)}if(c.name){ctx.font='12px sans-serif';ctx.fillText(String(c.name).slice(0,16),x,y+imgH+38)}ctx.restore();});
-   yCursor+=imgH+labelH+rowGap;
+   const chunks=[];
+   for(let i=0;i<g.cards.length;i+=cols) chunks.push(g.cards.slice(i,i+cols));
+   chunks.forEach((chunk,chunkIndex)=>{
+     if(groupByCoordinate&&g.title&&chunkIndex===0){ctx.fillStyle='#222';ctx.font='bold 16px sans-serif';ctx.fillText(g.title,pad,yCursor+17);yCursor+=groupTitleH;}
+     chunk.forEach((c,i)=>{const x=pad+i*(cellW+gap)+9,y=yCursor+4,img=loadedMap.get(c.id);ctx.save();if(showUnselected&&!selectedIds.has(c.id))ctx.globalAlpha=.28;if(img){const ratio=Math.min(imgW/img.naturalWidth,imgH/img.naturalHeight),w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;ctx.drawImage(img,x+(imgW-w)/2,y+(imgH-h)/2,w,h)}else{ctx.fillStyle='#eee';ctx.fillRect(x,y,imgW,imgH);ctx.fillStyle='#777';ctx.font='14px sans-serif';ctx.fillText('画像なし',x+10,y+imgH/2)}ctx.fillStyle='#222';ctx.font='bold 14px sans-serif';ctx.fillText(c.number||'',x,y+imgH+18);if(c.rarity){ctx.font='13px sans-serif';ctx.fillText(c.rarity,x+Math.max(70,imgW-32),y+imgH+18)}if(c.name){ctx.font='12px sans-serif';ctx.fillText(String(c.name).slice(0,16),x,y+imgH+38)}ctx.restore();});
+     yCursor+=imgH+labelH+rowGap;
+   });
  }
  $('collectionInfo').textContent=`${cards.length}枚をまとめました。現在の絞り込みを反映しています。`;
 }

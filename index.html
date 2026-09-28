@@ -13,7 +13,7 @@ select,input{width:100%;padding:11px;border:1px solid #ddd;border-radius:11px;ba
 .stats{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin:12px 0 7px}.progress{height:8px;background:#eee;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;width:0;background:#222}
 .controls{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}.controls input{grid-column:1/-1}
 .grid{padding:12px}.coordRow{margin-bottom:20px}.coordTitle{font-size:14px;font-weight:800;margin:0 0 7px 2px}.coordScroll{display:flex;gap:9px;overflow-x:auto;overflow-y:hidden;padding:2px 2px 7px}.coordScroll>.card{flex:0 0 118px;width:118px}.card{background:#fff;border-radius:12px;padding:6px;position:relative;box-shadow:0 1px 7px #0001}.card img{width:100%;height:auto;aspect-ratio:auto;object-fit:contain;display:block;border-radius:8px;background:#eee}.want{position:absolute;left:10px;bottom:30px;border-radius:7px;width:30px;height:30px;padding:0;background:#fff;color:#222;box-shadow:0 2px 8px #0003;border:2px solid #aaa;z-index:2;font-size:18px;line-height:26px}.wanted .want{background:#fff;color:#d08a00;border-color:#d08a00}.meta{font-size:11px;display:flex;justify-content:space-between;padding:6px 2px 1px;font-weight:700}.card.owned{outline:2px solid #222}.check{position:absolute;right:10px;bottom:30px;border-radius:7px;width:30px;height:30px;padding:0;background:#fff;color:#222;box-shadow:0 2px 8px #0003;border:2px solid #aaa;z-index:2;font-size:18px;line-height:26px}.owned .check{background:#222;color:#fff;border-color:#222}
-.sheet,.modal{position:fixed;inset:0;background:#0009;z-index:20;padding:18px;display:grid;place-items:center}.hidden{display:none}.panel{background:#fff;border-radius:18px;padding:15px;width:min(500px,100%);max-height:90vh;overflow:auto}.panel h2{margin:3px 0 8px;font-size:19px}.close{float:right;width:34px;height:34px;border-radius:50%;padding:0;background:#eee;color:#222;font-size:20px}.profileRow{display:flex;gap:8px;align-items:center;padding:12px 0;border-bottom:1px solid #eee}.menuSheet{position:fixed;inset:0;background:#0007;z-index:30}.menuPanel{position:absolute;top:0;right:0;width:min(390px,88vw);height:100%;background:#fff;box-shadow:-4px 0 20px #0002;overflow:auto}.menuHead{display:flex;align-items:center;justify-content:space-between;padding:18px 16px;border-bottom:1px solid #eee}.menuHead h2{margin:0;font-size:22px}.menuSection{padding:16px;border-bottom:1px solid #eee}.menuLabel{font-size:13px;color:#777;font-weight:700;margin-bottom:8px}.menuItem{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#fff;color:#252329;padding:12px 0;border-radius:0;font-weight:600}.menuItem+.menuItem{border-top:1px solid #f1f1f1}.menuIcon{width:24px;text-align:center;font-size:19px}.menuProfile{font-size:17px;font-weight:800;line-height:1.35}.menuSub{font-size:12px;color:#888;margin-top:3px}.profileRow .name{flex:1;font-weight:700}.small{font-size:12px;color:#777}.file{display:none}.msg{text-align:center;padding:30px 15px;color:#777}
+.sheet,.modal{position:fixed;inset:0;background:#0009;z-index:20;padding:18px;display:grid;place-items:center}.hidden{display:none}.panel{background:#fff;border-radius:18px;padding:15px;width:min(500px,100%);max-height:90vh;overflow:auto}.panel h2{margin:3px 0 8px;font-size:19px}.close{float:right;width:34px;height:34px;border-radius:50%;padding:0;background:#eee;color:#222;font-size:20px}.profileRow{display:flex;gap:8px;align-items:center;padding:12px 0;border-bottom:1px solid #eee}.menuSheet{position:fixed;inset:0;background:#0007;z-index:30}.menuPanel{position:absolute;top:0;right:0;width:min(390px,88vw);height:100%;background:#fff;box-shadow:-4px 0 20px #0002;overflow:auto}.menuHead{display:flex;align-items:center;justify-content:space-between;padding:18px 16px;border-bottom:1px solid #eee}.menuHead h2{margin:0;font-size:22px}.menuSection{padding:16px;border-bottom:1px solid #eee}.menuLabel{font-size:13px;color:#777;font-weight:700;margin-bottom:8px}.menuItem{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#fff;color:#252329;padding:12px 0;border-radius:0;font-weight:600}.menuItem+.menuItem{border-top:1px solid #f1f1f1}.menuIcon{width:24px;text-align:center;font-size:19px}.menuProfile{font-size:17px;font-weight:800;line-height:1.35}.menuSub{font-size:12px;color:#888;margin-top:3px}.profileRow .name{flex:1;font-weight:700}.small{font-size:12px;color:#777}.collectionOption{display:flex;align-items:center;gap:7px;margin:3px 0;font-size:14px;white-space:nowrap}.collectionOption input{width:18px;min-width:18px;height:18px;padding:0;margin:0}.file{display:none}.msg{text-align:center;padding:30px 15px;color:#777}
 </style></head><body>
 <header>
 <div class="fixedbar">
@@ -22,7 +22,7 @@ select,input{width:100%;padding:11px;border:1px solid #ddd;border-radius:11px;ba
 </div>
 <div class="tools">
 <div class="controls"><select id="status"><option value="">すべて</option><option value="no">未所持</option><option value="yes">所持</option><option value="want">欲しい</option></select><select id="rarity"><option value="">全レアリティ</option></select></div>
-<div class="top"><button class="collectionMode compactBtn" data-mode="trade">交換用モード</button><button id="collectionBtn" class="collectionBtn compactBtn">画像に保存</button></div>
+<div class="top"><button id="unownedModeBtn" class="compactBtn">未所持のみ</button><button class="collectionMode compactBtn" data-mode="trade">交換用モード</button><button id="collectionBtn" class="collectionBtn compactBtn">画像に保存</button></div>
 </div>
 </header>
 <main class="grid" id="grid"></main>
@@ -43,14 +43,8 @@ select,input{width:100%;padding:11px;border:1px solid #ddd;border-radius:11px;ba
 <div class="modal hidden" id="collectionModal"><div class="panel">
 <button class="close" id="collectionClose">×</button><h2>コレクション画像</h2>
 <div style="display:flex;gap:7px;margin-bottom:9px"><button class="light collectionMode" data-mode="owned" style="flex:1">✓ 所持</button><button class="light collectionMode" data-mode="wanted" style="flex:1">☆ 欲しい</button><button class="light collectionMode" data-mode="unowned" style="flex:1">○ 未所持</button></div><div id="collectionInfo" class="small" style="margin-bottom:10px"></div>
-<label style="display:inline-flex;align-items:center;gap:7px;margin:8px 0;font-size:14px;white-space:nowrap;writing-mode:horizontal-tb;">
-  <input type="checkbox" id="collectionShowUnselected" style="flex:0 0 auto;">
-  <span style="white-space:nowrap;">選択していないカードも半透明で表示</span>
-</label>
-<label style="display:inline-flex;align-items:center;gap:7px;margin:4px 0 8px;font-size:14px;white-space:nowrap;writing-mode:horizontal-tb;">
-  <input type="checkbox" id="collectionGroupByCoordinate" style="flex:0 0 auto;">
-  <span style="white-space:nowrap;">コーデごとに改行</span>
-</label>
+<label class="collectionOption"><input type="checkbox" id="collectionShowUnselected"><span>選択していないカードも半透明で表示</span></label>
+<label class="collectionOption"><input type="checkbox" id="collectionGroupByCoordinate"><span>コーデごとに改行</span></label>
 <div style="background:#f7f5f8;border-radius:12px;padding:8px;overflow:auto"><canvas id="collectionCanvas" style="display:block;width:100%;height:auto;background:#fff;border-radius:8px"></canvas></div>
 <button id="collectionSave" class="compactBtn" style="width:100%;margin-top:10px">画像を保存</button>
 </div></div>
@@ -157,10 +151,15 @@ function collectionCards(p,mode){
 function getTradeCount(c,p){
   const key="ownedCount_"+p.id;
   try{
-    const obj=JSON.parse(localStorage.getItem(key)||"{}");
+    const obj=JSON.parse(localStorage.getItem(key)||"{}")||{};
     if(Object.prototype.hasOwnProperty.call(obj,c.id)) return Math.max(0,parseInt(obj[c.id],10)||0);
   }catch(e){}
-  return getSet("owned",p.id).has(c.id)?1:0;
+  const importedCount=c.tradeCount??c.ownedCount??c.quantity??c.count;
+  if(importedCount!==undefined && importedCount!==null && importedCount!==""){
+    const n=parseInt(importedCount,10);
+    if(Number.isFinite(n)) return Math.max(0,n);
+  }
+  return c.owned===true||getSet("owned",p.id).has(c.id)?1:0;
 }
 function setTradeCount(c,p,n){
   const key="ownedCount_"+p.id;
@@ -172,9 +171,26 @@ function setTradeCount(c,p,n){
   if(n>0) owned.add(c.id); else owned.delete(c.id);
   putSet("owned",p.id,owned);
 }
+function tradeFilteredCards(p){
+  const q=$("q").value.trim().toLowerCase(),r=$("rarity").value;
+  return p.cards.filter(c=>
+    (!q||[c.number,c.name,c.rarity,c.search,c.keywords].flatMap(v=>Array.isArray(v)?v:[v]).filter(Boolean).join(" ").toLowerCase().includes(q))&&
+    (!r||c.rarity===r)
+  );
+}
+function tradeGroups(cards){
+  const groups=[],map=new Map();
+  cards.forEach(c=>{
+    const title=c.coordinate||c.coord||c.outfit||c.coodinate||c.coodinateName||c.outfitName||"";
+    const key=title||("__single__"+c.id);
+    if(!map.has(key)){const g={key,title,cards:[]};map.set(key,g);groups.push(g)}
+    map.get(key).cards.push(c);
+  });
+  return groups;
+}
 function openTradeMode(){
   const p=active(); if(!p)return;
-  const cards=currentFilteredCards(p);
+  const cards=tradeFilteredCards(p);
   const overlay=document.createElement("div");
   overlay.id="tradeModeOverlay";
   overlay.style.cssText="position:fixed;inset:0;background:#fff;z-index:9999;overflow:auto;padding:16px;box-sizing:border-box;";
@@ -187,37 +203,27 @@ function openTradeMode(){
   </div>`;
   document.body.appendChild(overlay);
   const rows=overlay.querySelector("#tradeRows");
-
-  // コーデ単位でまとめる。JSON側にコーデ名がある場合はそれを使用。
-  const groups=[], map=new Map();
-  cards.forEach(c=>{
-    const key=c.coordinate||c.coord||c.outfit||c.coodinate||c.coodinateName||c.outfitName||c.id;
-    if(!map.has(key)){
-      const g={key,title:c.coordinate||c.coord||c.outfit||c.coodinate||c.coodinateName||c.outfitName||"" ,cards:[]};
-      map.set(key,g); groups.push(g);
-    }
-    map.get(key).cards.push(c);
-  });
-
-  groups.forEach((g,gi)=>{
+  const groups=tradeGroups(cards);
+  if(!groups.length){rows.innerHTML='<div class="msg">該当するカードがありません</div>'}
+  groups.forEach(g=>{
     const row=document.createElement("div");
-    row.style.cssText="margin-bottom:24px;";
+    row.style.cssText="margin-bottom:20px;";
     if(g.title){
       const title=document.createElement("div");
       title.textContent=g.title;
-      title.style.cssText="font-weight:700;font-size:16px;margin:0 0 8px;";
+      title.style.cssText="font-weight:700;font-size:15px;margin:0 0 7px;";
       row.appendChild(title);
     }
     const grid=document.createElement("div");
-    grid.style.cssText="display:flex;flex-wrap:nowrap;gap:10px;overflow-x:auto;overflow-y:hidden;padding-bottom:6px;align-items:flex-start;";
+    grid.style.cssText="display:flex;flex-wrap:nowrap;gap:9px;overflow-x:auto;overflow-y:hidden;padding-bottom:5px;align-items:flex-start;";
     g.cards.forEach(c=>{
       const count=getTradeCount(c,p);
       const card=document.createElement("div");
       card.className="card";
       card.style.cssText="position:relative;overflow:hidden;flex:0 0 118px;width:118px;";
       card.innerHTML=`
-        <img src="${c.image}" alt="${c.number||""}" style="width:100%;display:block;">
-        <div style="font-size:11px;font-weight:700;line-height:1.35;padding:5px 2px 4px;min-height:30px;">${c.name||""}</div>
+        <img src="${esc(c.image)}" alt="${esc(c.number||"")}" style="width:100%;display:block;">
+        <div style="font-size:11px;font-weight:700;line-height:1.35;padding:5px 2px 4px;min-height:30px;">${esc(c.name||"")}</div>
         <div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:3px 2px 4px;border-top:1px solid #eee;">
           <button class="tradeMinus compactBtn" aria-label="1枚減らす" style="width:26px;height:26px;font-size:17px;line-height:1;padding:0;">−</button>
           <strong class="tradeCount" style="min-width:18px;text-align:center;font-size:14px;">${count}</strong>
@@ -235,7 +241,7 @@ function openTradeMode(){
     row.appendChild(grid);
     rows.appendChild(row);
   });
-  overlay.querySelector("#tradeImageSave").onclick=()=>{overlay.remove();makeCollectionImage('owned')};
+  overlay.querySelector("#tradeImageSave").onclick=async()=>{overlay.remove();await makeTradeImage()};
   overlay.querySelector("#tradeClose").onclick=()=>overlay.remove();
 }
 async function loadCanvasImage(url){
@@ -244,6 +250,18 @@ async function loadCanvasImage(url){
     try{const img=new Image();img.crossOrigin='anonymous';img.src=src;await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;setTimeout(()=>rej(new Error('timeout')),8000)});if(img.naturalWidth&&img.naturalHeight)return img;}catch(e){}
   }
   return null;
+}
+function getCollectionLayout(cards,groups,groupByCoordinate){
+  const baseCols=(cards.length<=12?3:cards.length<=30?4:cards.length<=60?5:6);
+  const maxCanvasW=1400,pad=24,gap=12;
+  const baseCellW=Math.max(120,Math.floor((maxCanvasW-pad*2-gap*(baseCols-1))/baseCols));
+  const imgW=Math.max(95,baseCellW-18),imgH=Math.round(imgW*1.375),labelH=46,titleH=70,groupTitleH=24,rowGap=4;
+  let cols=baseCols;
+  const estimate=()=>titleH+pad+groups.reduce((sum,g)=>sum+Math.ceil(g.cards.length/cols)*(imgH+labelH+rowGap)+(groupByCoordinate&&g.title?groupTitleH:0),0);
+  // iPhone/Safari can clip very tall canvases. Increase columns while keeping each card's size unchanged.
+  while(estimate()>3900 && cols<12) cols++;
+  const cellW=imgW+18;
+  return {cols,cellW,imgW,imgH,labelH,titleH,groupTitleH,rowGap,pad,gap,width:cols*cellW+pad*2+gap*(cols-1),height:estimate()};
 }
 async function makeCollectionImage(mode=collectionMode){
  collectionMode=mode;
@@ -255,12 +273,10 @@ async function makeCollectionImage(mode=collectionMode){
  if(!cards.length){alert((mode==='owned'?'所持':mode==='wanted'?'欲しい':'未所持')+'カードがありません。');return}
  $('collectionModal').classList.remove('hidden');$('collectionInfo').textContent='画像を作成しています…';
  document.querySelectorAll('.collectionMode').forEach(b=>{if(b.dataset.mode!=='trade'){b.style.background=b.dataset.mode===mode?'#222':'#eee';b.style.color=b.dataset.mode===mode?'#fff':'#222'}});
- const groups=groupByCoordinate?groupCardsByCoordinate(cards):[{title:'',cards}],
-       cols=(cards.length<=12?3:cards.length<=30?4:cards.length<=60?5:6),
-       maxCanvasW=1400,pad=24,gap=12;
- const cellW=Math.max(120,Math.floor((maxCanvasW-pad*2-gap*(cols-1))/cols)),imgW=Math.max(95,cellW-18),imgH=Math.round(imgW*1.375),labelH=46,titleH=70,groupTitleH=24,rowGap=4;
- const rowHeights=groups.map(g=>(groupByCoordinate?groupTitleH:0)+imgH+labelH+rowGap),canvas=$('collectionCanvas');
- canvas.width=cols*cellW+pad*2+gap*(cols-1);canvas.height=titleH+rowHeights.reduce((a,b)=>a+b,0)+pad;
+ const groups=groupByCoordinate?groupCardsByCoordinate(cards):[{title:'',cards}],layout=getCollectionLayout(cards,groups,groupByCoordinate),
+       {cols,cellW,imgW,imgH,labelH,titleH,groupTitleH,rowGap,pad,gap}=layout,
+       canvas=$('collectionCanvas');
+ canvas.width=layout.width;canvas.height=layout.height;
  const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
  ctx.fillStyle='#222';ctx.font='bold 24px -apple-system,BlinkMacSystemFont,sans-serif';ctx.fillText(p.name,pad,30);ctx.font='16px -apple-system,BlinkMacSystemFont,sans-serif';ctx.fillText(`${noSelection?'全表示':(mode==='owned'?'所持':mode==='wanted'?'欲しい':'未所持')} ${effectiveSelected.length}枚${showUnselected?'（未選択カードは半透明）':''}`,pad,56);
  const loaded=await Promise.all(cards.map(async c=>({c,img:await loadCanvasImage(c.image)}))),loadedMap=new Map(loaded.map(x=>[x.c.id,x.img]));
@@ -270,19 +286,69 @@ async function makeCollectionImage(mode=collectionMode){
    for(let i=0;i<g.cards.length;i+=cols) chunks.push(g.cards.slice(i,i+cols));
    chunks.forEach((chunk,chunkIndex)=>{
      if(groupByCoordinate&&g.title&&chunkIndex===0){ctx.fillStyle='#222';ctx.font='bold 16px sans-serif';ctx.fillText(g.title,pad,yCursor+17);yCursor+=groupTitleH;}
-     chunk.forEach((c,i)=>{const x=pad+i*(cellW+gap)+9,y=yCursor+4,img=loadedMap.get(c.id);ctx.save();if(showUnselected&&!selectedIds.has(c.id))ctx.globalAlpha=.28;if(img){const ratio=Math.min(imgW/img.naturalWidth,imgH/img.naturalHeight),w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;ctx.drawImage(img,x+(imgW-w)/2,y+(imgH-h)/2,w,h)}else{ctx.fillStyle='#eee';ctx.fillRect(x,y,imgW,imgH);ctx.fillStyle='#777';ctx.font='14px sans-serif';ctx.fillText('画像なし',x+10,y+imgH/2)}ctx.fillStyle='#222';ctx.font='bold 14px sans-serif';ctx.fillText(c.number||'',x,y+imgH+18);if(c.rarity){ctx.font='13px sans-serif';ctx.fillText(c.rarity,x+Math.max(70,imgW-32),y+imgH+18)}if(c.name){ctx.font='12px sans-serif';ctx.fillText(String(c.name).slice(0,16),x,y+imgH+38)}ctx.restore();});
+     chunk.forEach((c,i)=>{const x=pad+i*(cellW+gap)+9,y=yCursor+4,img=loadedMap.get(c.id);ctx.save();if(showUnselected&&!selectedIds.has(c.id))ctx.globalAlpha=.28;if(img){const ratio=Math.min(imgW/img.naturalWidth,imgH/img.naturalHeight),w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;ctx.drawImage(img,x+(imgW-w)/2,y+(imgH-h)/2,w,h)}else{ctx.fillStyle='#eee';ctx.fillRect(x,y,imgW,imgH);ctx.fillStyle='#777';ctx.font='14px sans-serif';ctx.fillText('画像なし',x+10,y+imgH/2)}ctx.globalAlpha=1;ctx.fillStyle='#222';ctx.font='bold 14px sans-serif';ctx.fillText(c.number||'',x,y+imgH+18);if(c.rarity){ctx.font='13px sans-serif';ctx.fillText(c.rarity,x+Math.max(70,imgW-32),y+imgH+18)}if(c.name){ctx.font='12px sans-serif';ctx.fillText(String(c.name).slice(0,16),x,y+imgH+38)}ctx.restore();});
      yCursor+=imgH+labelH+rowGap;
    });
  }
  $('collectionInfo').textContent=`${cards.length}枚をまとめました。現在の絞り込みを反映しています。`;
 }
-function saveCollectionImage(){
- const canvas=$("collectionCanvas");
- try{canvas.toBlob(blob=>{if(!blob){alert("画像を保存できませんでした。");return}const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="collection.png";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000)},"image/png")}
- catch(e){alert("画像を保存できませんでした。カード画像のサイト側の制限により、保存できない場合があります。")}
+function canvasToBlob(canvas){
+ return new Promise((resolve,reject)=>{
+   try{canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('toBlob failed')),'image/png')}catch(e){reject(e)}
+ });
+}
+function downloadBlob(blob,filename){
+ const url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+async function saveCollectionImage(){
+ try{
+   const blob=await canvasToBlob($("collectionCanvas"));
+   downloadBlob(blob,"collection.png");
+ }catch(e){alert("画像を保存できませんでした。画像サイズが大きすぎる場合は、コーデごとに改行を外して試してください。");}
+}
+async function makeTradeImage(){
+ const p=active();if(!p)return;
+ const cards=tradeFilteredCards(p);
+ if(!cards.length){alert("該当するカードがありません。");return}
+ const groups=tradeGroups(cards),baseGroups=groups,layout=getCollectionLayout(cards,groups,true);
+ const {cols,cellW,imgW,imgH,labelH,titleH,groupTitleH,rowGap,pad,gap}=layout;
+ const canvas=document.createElement('canvas');canvas.width=layout.width;canvas.height=layout.height;
+ const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+ ctx.fillStyle='#222';ctx.font='bold 24px -apple-system,BlinkMacSystemFont,sans-serif';ctx.fillText(p.name,pad,30);
+ ctx.font='16px -apple-system,BlinkMacSystemFont,sans-serif';
+ const total=cards.reduce((n,c)=>n+getTradeCount(c,p),0);ctx.fillText(`交換用 ${cards.length}枚・合計${total}枚`,pad,56);
+ const loaded=await Promise.all(cards.map(async c=>({c,img:await loadCanvasImage(c.image)}))),loadedMap=new Map(loaded.map(x=>[x.c.id,x.img]));
+ let yCursor=titleH;
+ for(const g of baseGroups){
+   const chunks=[];for(let i=0;i<g.cards.length;i+=cols)chunks.push(g.cards.slice(i,i+cols));
+   chunks.forEach((chunk,chunkIndex)=>{
+     if(g.title&&chunkIndex===0){ctx.fillStyle='#222';ctx.font='bold 16px sans-serif';ctx.fillText(g.title,pad,yCursor+17);yCursor+=groupTitleH;}
+     chunk.forEach((c,i)=>{
+       const x=pad+i*(cellW+gap)+9,y=yCursor+4,img=loadedMap.get(c.id),count=getTradeCount(c,p);
+       if(img){const ratio=Math.min(imgW/img.naturalWidth,imgH/img.naturalHeight),w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;ctx.drawImage(img,x+(imgW-w)/2,y+(imgH-h)/2,w,h)}else{ctx.fillStyle='#eee';ctx.fillRect(x,y,imgW,imgH);ctx.fillStyle='#777';ctx.font='14px sans-serif';ctx.fillText('画像なし',x+10,y+imgH/2)}
+       // 枚数をカード画像の上に大きく表示
+       const text=String(count);
+       ctx.font='bold 24px -apple-system,BlinkMacSystemFont,sans-serif';
+       const tw=ctx.measureText(text).width,bx=x+imgW-tw-14,by=y+12,bw=tw+12,bh=32;
+       ctx.fillStyle='rgba(255,255,255,.94)';ctx.beginPath();ctx.roundRect(bx,by,bw,bh,9);ctx.fill();
+       ctx.fillStyle='#222';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,bx+bw/2,by+bh/2);ctx.textAlign='left';ctx.textBaseline='alphabetic';
+       ctx.fillStyle='#222';ctx.font='bold 14px sans-serif';ctx.fillText(c.number||'',x,y+imgH+18);
+       if(c.rarity){ctx.font='13px sans-serif';ctx.fillText(c.rarity,x+Math.max(70,imgW-32),y+imgH+18)}
+       if(c.name){ctx.font='12px sans-serif';ctx.fillText(String(c.name).slice(0,16),x,y+imgH+38)}
+     });
+     yCursor+=imgH+labelH+rowGap;
+   });
+ }
+ try{
+   const blob=await canvasToBlob(canvas);downloadBlob(blob,"exchange.png");
+ }catch(e){alert("画像を保存できませんでした。画像サイズが大きすぎる可能性があります。");}
 }
 document.querySelectorAll(".collectionMode").forEach(b=>b.onclick=()=>b.dataset.mode==="trade"?openTradeMode():makeCollectionImage(b.dataset.mode));
 $("collectionBtn").onclick=()=>makeCollectionImage(collectionMode);
+function syncUnownedMode(){const on=$("status").value==="no";$("unownedModeBtn").style.background=on?"#222":"#eee";$("unownedModeBtn").style.color=on?"#fff":"#222"}
+$("unownedModeBtn").onclick=()=>{$("status").value=$("status").value==="no"?"":"no";syncUnownedMode();render()};
 $("collectionShowUnselected").onchange=()=>{if(!$("collectionModal").classList.contains("hidden"))makeCollectionImage(collectionMode)};
 $("collectionGroupByCoordinate").onchange=()=>{if(!$("collectionModal").classList.contains("hidden"))makeCollectionImage(collectionMode)};
 $("collectionSave").onclick=saveCollectionImage;$('collectionClose').onclick=()=>$("collectionModal").classList.add("hidden");
@@ -292,7 +358,8 @@ $("menuBtn").onclick=()=>{renderMenu();$("menuSheet").classList.remove("hidden")
 $("modalClose").onclick=()=>$("modal").classList.add("hidden");
 $("owned").onclick=()=>{let s=getSet("owned",active().id);s.has(cur.id)?s.delete(cur.id):s.add(cur.id);putSet("owned",active().id,s);render();updateModal()};
 $("wanted").onclick=()=>{let s=getSet("wanted",active().id);s.has(cur.id)?s.delete(cur.id):s.add(cur.id);putSet("wanted",active().id,s);render();updateModal()};
-["q","status","rarity"].forEach(id=>$(id).oninput=render);
+["q","status","rarity"].forEach(id=>$(id).oninput=()=>{if(id==="status")syncUnownedMode();render()});
+syncUnownedMode();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 if(!profiles.length)importFileFetch();renderProfiles();render();
 async function importFileFetch(){try{let p=await (await fetch("profiles/aikatsu-encore-01.json")).json();profiles=[p];activeId=p.id;save();localStorage.setItem("cardcollector-active",activeId)}catch(e){}}

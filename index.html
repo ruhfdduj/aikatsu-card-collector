@@ -27,7 +27,7 @@ select,input{width:100%;padding:11px;border:1px solid #ddd;border-radius:11px;ba
 </div>
 </header>
 <main class="grid" id="grid"></main>
-<input id="file" class="file" type="file" accept=".json,application/json">
+<input id="file" class="file" type="file" accept=".json,application/json,text/plain,application/octet-stream">
 
 <div class="sheet hidden" id="profilesSheet"><div class="panel">
 <button class="close" id="profilesClose">×</button><h2>プロファイル管理</h2>
@@ -81,7 +81,16 @@ function selectP(id){activeId=id;localStorage.setItem("cardcollector-active",id)
 function removeP(id){if(!confirm("このプロファイルを削除しますか？\n所持情報もこの端末から削除されます。"))return;profiles=profiles.filter(p=>p.id!==id);localStorage.removeItem(stateKey("owned",id));localStorage.removeItem(stateKey("wanted",id));activeId=profiles[0]?.id||"";save();localStorage.setItem("cardcollector-active",activeId);renderProfiles();render()}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 async function importFile(file){
- try{let p=JSON.parse(await file.text());if(!p||!p.name||!Array.isArray(p.cards))throw Error("形式が違います");p.id=p.id||("profile-"+Date.now());if(profiles.some(x=>x.id===p.id))p.id=p.id+"-"+Date.now();p.cards=p.cards.map((c,i)=>({...c,id:c.id||c.number||String(i),rarity:c.rarity||"",image:c.image||""}));
+ try{
+  // iPhone/SafariではGitHubなどから保存した.jsonがtext/plainや
+  // application/octet-streamとして渡されることがあるため、file.typeでは判定しない。
+  let text=await file.text();
+  text=text.replace(/^\uFEFF/,"");
+  let p=JSON.parse(text);
+  if(!p||!p.name||!Array.isArray(p.cards))throw Error("形式が違います");
+  p.id=p.id||("profile-"+Date.now());
+  if(profiles.some(x=>x.id===p.id))p.id=p.id+"-"+Date.now();
+  p.cards=p.cards.map((c,i)=>({...c,id:c.id||c.number||String(i),rarity:c.rarity||"",image:c.image||""}));
  profiles.push(p);activeId=p.id;
  const owned=new Set(p.cards.filter(c=>c.owned===true).map(c=>c.id));
  const wanted=new Set(p.cards.filter(c=>c.wanted===true).map(c=>c.id));

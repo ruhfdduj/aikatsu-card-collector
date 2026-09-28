@@ -102,7 +102,14 @@ async function importFile(file){
  const owned=new Set(p.cards.filter(c=>c.owned===true).map(c=>c.id));
  const wanted=new Set(p.cards.filter(c=>c.wanted===true).map(c=>c.id));
  if(owned.size)putSet("owned",p.id,owned); else localStorage.removeItem(stateKey("owned",p.id));
- if(wanted.size)putSet("wanted",p.id,wanted); else localStorage.removeItem(stateKey("wanted",p.id));save();localStorage.setItem("cardcollector-active",activeId);renderProfiles();render();alert("「"+p.name+"」を追加しました！")}catch(e){alert("プロファイルを読み込めませんでした。JSON形式を確認してください。")}
+ if(wanted.size)putSet("wanted",p.id,wanted); else localStorage.removeItem(stateKey("wanted",p.id));
+ // JSONにownedCountが入っている場合は、この端末の所持枚数として初期登録する。
+ try{
+   const countKey="ownedCount_"+p.id, saved=JSON.parse(localStorage.getItem(countKey)||"{}")||{};
+   p.cards.forEach(c=>{if(!Object.prototype.hasOwnProperty.call(saved,c.id)){const n=parseInt(c.ownedCount,10);if(Number.isFinite(n)&&n>=0)saved[c.id]=n;else if(c.owned===true)saved[c.id]=1;}});
+   localStorage.setItem(countKey,JSON.stringify(saved));
+ }catch(e){}
+ save();localStorage.setItem("cardcollector-active",activeId);renderProfiles();render();alert("「"+p.name+"」を追加しました！")}catch(e){alert("プロファイルを読み込めませんでした。JSON形式を確認してください。")}
 }
 function groupCardsByCoordinate(cards){
  const groups=[],map=new Map();
@@ -116,9 +123,19 @@ function groupCardsByCoordinate(cards){
 }
 function getOwnedCount(c,p){
  const key="ownedCount_"+p.id;
- try{const obj=JSON.parse(localStorage.getItem(key)||"{}")||{};if(Object.prototype.hasOwnProperty.call(obj,c.id)){const n=parseInt(obj[c.id],10);return Number.isFinite(n)?Math.max(0,n):0;}}catch(e){}
- for(const k of ["tradeCount","ownedCount","quantity","count"]){if(c[k]!==undefined&&c[k]!==null&&c[k]!==""){const n=parseInt(c[k],10);if(Number.isFinite(n))return Math.max(0,n);}}
- return getSet("owned",p.id).has(c.id)?1:0;
+ let obj={};
+ try{obj=JSON.parse(localStorage.getItem(key)||"{}")||{}}catch(e){}
+ if(Object.prototype.hasOwnProperty.call(obj,c.id)){
+   const n=parseInt(obj[c.id],10);
+   return Number.isFinite(n)?Math.max(0,n):0;
+ }
+ for(const k of ["ownedCount","quantity","count"]){
+   if(c[k]!==undefined&&c[k]!==null&&c[k]!==""){
+     const n=parseInt(c[k],10);
+     if(Number.isFinite(n))return Math.max(0,n);
+   }
+ }
+ return c.owned===true||getSet("owned",p.id).has(c.id)?1:0;
 }
 function setOwnedCount(c,p,n){
  n=Math.max(0,parseInt(n,10)||0);const key="ownedCount_"+p.id;let obj={};
@@ -236,7 +253,7 @@ async function makeCollectionImage(mode=collectionMode){
        canvas=$('collectionCanvas');
  canvas.width=layout.width;canvas.height=layout.height;
  const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
- ctx.fillStyle='#222';ctx.font='bold 24px -apple-system,BlinkMacSystemFont,sans-serif';ctx.fillText(p.name,pad,30);ctx.font='16px -apple-system,BlinkMacSystemFont,sans-serif';ctx.fillText(`${noSelection?'全表示':(mode==='owned'?'所持':mode==='wanted'?'お気に入り':'未所持')} ${effectiveSelected.length}枚${showUnselected?'（未選択カードは半透明）':''}`,pad,56);
+ ctx.fillStyle='#222';ctx.font='bold 24px -apple-system,BlinkMacSystemFont,sans-serif';ctx.fillText(p.name,pad,30);ctx.font='16px -apple-system,BlinkMacSystemFont,sans-serif';ctx.fillText(`${noSelection?'全表示':(mode==='owned'?'所持':mode==='wanted'?'お気に入り':'未所持')} ${effectiveSelected.length}枚${tradeMode?'　交換モード：譲れる枚数':''}${showUnselected?'（未選択カードは半透明）':''}`,pad,56);
  const loaded=await Promise.all(cards.map(async c=>({c,img:await loadCanvasImage(c.image)}))),loadedMap=new Map(loaded.map(x=>[x.c.id,x.img]));
  let yCursor=titleH;
  for(const g of groups){
@@ -276,8 +293,12 @@ function syncFavoriteMode(){
 }
 $("favoriteModeBtn").onclick=()=>{favoriteOnly=!favoriteOnly;syncFavoriteMode();render()};
 $("collectionBtn").onclick=()=>{collectionMode="owned";$("collectionModal").classList.remove("hidden");$("collectionInfo").textContent="画像を作成しています…";makeCollectionImage("owned")};
-$("collectionShowUnselected").onchange=()=>{if(!$("collectionModal").classList.contains("hidden"))makeCollectionImage(collectionMode)};
-$("collectionGroupByCoordinate").onchange=()=>{if(!$("collectionModal").classList.contains("hidden"))makeCollectionImage(collectionMode)};
+document.querySelectorAll('.collectionMode').forEach(b=>{
+  b.onclick=()=>makeCollectionImage(b.dataset.mode);
+});
+["collectionShowUnselected","collectionShowCount","collectionTradeMode","collectionGroupByCoordinate"].forEach(id=>{
+  $(id).onchange=()=>{if(!$("collectionModal").classList.contains("hidden"))makeCollectionImage(collectionMode)};
+});
 $("collectionSave").onclick=saveCollectionImage;$('collectionClose').onclick=()=>$("collectionModal").classList.add("hidden");
 $("menuImport").onclick=()=>{$("file").click();$("menuSheet").classList.add("hidden")};$("menuExport").onclick=exportProfile;
 $("file").onchange=e=>{if(e.target.files[0])importFile(e.target.files[0]);e.target.value=""};
